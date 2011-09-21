@@ -1,15 +1,19 @@
 # -*- coding:utf-8 -*-
-from datetime import datetime, timedelta
-from decimal import Decimal
-import re
 
+import re
 import string
 import random
+
+from decimal import Decimal
+from datetime import datetime, timedelta
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
 MIN_SMALL_INT, MAX_SMALL_INT = -32768, 32767  # 16bits integer
 MIN_INT, MAX_INT = -2147483648, 2147483647
 MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808l, 9223372036854775807l
+
+ASCII_TABLE = ''.join([chr(i) for i in range(128)])
+BINARY_TABLE = '01'
 
 error_msgs = {}
 error_msgs["max_length"] = "Informed max_length is too small."
@@ -32,23 +36,22 @@ def or_null(fnc, frequency=0.5):
 
     Example:
 
-    >>> int_or_null = or_null(get_tiny_integer, 0.2)()  # returns a tiny integer or None
-    >>> assert int_or_null is None or isinstance(int_or_null, int)
+    >>> int_or_null = or_null(lambda: 10, 0.2)()  # returns a tiny integer or None
+    >>> assert (int_or_null is None or isinstance(int_or_null, int))
     >>>
     >>> # test with arguments
-    >>> str_or_null = or_null(get_string)(30)  # returns a non empty string or None
-    >>> assert str_or_null is None or isinstance(str_or_null, basestring)
+    >>> str_or_null = or_null(lambda length: length * 'c')(30)  # returns a non empty string or None
+    >>> assert (str_or_null is None or isinstance(str_or_null, basestring))
 
     @param fnc:
     @param frequency:
     @return:
     """
-
-    def _fnc(fnc, *args, **kw):
+    def _fnc(*args, **kw):
         if random.random() < frequency:
             return None
         else:
-            return fnc
+            return fnc(*args, **kw)
     return _fnc
 
 
@@ -59,12 +62,13 @@ def get_tiny_integer():
     Example:
 
     >>> tiny_integer = get_tiny_integer()
-    >>> assert MIN_TINY_INTEGER <= tiny_integer <= MAX_TINY_INTEGER
+    >>> assert MIN_TINY_INT <= tiny_integer
+    >>> assert tiny_integer <= MAX_TINY_INT
     >>> assert isinstance(tiny_integer, int)
 
     @return: int complainant with 8bits integer
     """
-    return random.randint(MIN_TINY_INTEGER, MAX_TINY_INTEGER)
+    return random.randint(MIN_TINY_INT, MAX_TINY_INT)
 
 
 def get_small_integer():
@@ -74,7 +78,8 @@ def get_small_integer():
     Example:
 
     >>> small_integer = get_small_integer()
-    >>> assert MIN_SMALL_INT <= small_integer <= MAX_SMALL_INT
+    >>> assert MIN_SMALL_INT <= small_integer
+    >>> assert small_integer <= MAX_SMALL_INT
     >>> assert isinstance(small_integer, int)
 
     @return: int complainant with 16bits integer
@@ -175,7 +180,7 @@ def get_positive_float():
 
     Example:
 
-    >>> positive_float = get_postive_float()
+    >>> positive_float = get_positive_float()
     >>> assert 0 <= positive_float
     >>> assert isinstance(positive_float, float)
 
@@ -190,13 +195,10 @@ def get_positive_decimal(max_digits, decimal_places):
 
     Example:
 
-    >>> get_decimal(5, 2)  # produces a decimal number in the format 999.99
-    >>> get_decimal(4, 1)  # produces a decimal number in the format 9999.9
-    >>> get_decimal(8, 1)  # produces a decimal number in the format 99999999.9
-    >>>
-    >>> decimal_number = get_decimal(5, 2)
+    >>> decimal_number = get_positive_decimal(5, 2)
     >>> assert isinstance(decimal_number, Decimal)
-    >>> assert 0 <= decimal_number <= Decimal('999.99')
+    >>> assert 0 <= decimal_number
+    >>> assert decimal_number <= Decimal('999.99')
 
     @param max_digits:
     @param decimal_places:
@@ -213,13 +215,10 @@ def get_decimal(max_digits, decimal_places):
 
     Example:
 
-    >>> get_decimal(5, 2)  # produces a decimal number in the format 999.99
-    >>> get_decimal(4, 1)  # produces a decimal number in the format 9999.9
-    >>> get_decimal(8, 1)  # produces a decimal number in the format 99999999.9
-    >>>
     >>> decimal_number = get_decimal(5, 2)
     >>> assert isinstance(decimal_number, Decimal)
-    >>> assert Decimal('-999.99') <= decimal_number <= Decimal('999.99')
+    >>> assert Decimal('-999.99') <= decimal_number
+    >>> assert decimal_number <= Decimal('999.99')
 
     @param max_digits:
     @param decimal_places:
@@ -248,15 +247,42 @@ def get_binary(length):
     @param length:
     @return: string in the format '01000101...'
     """
-    return get_char_sequence('01', length)
+    return get_char_sequence(BINARY_TABLE, length)
 
 
 def get_ascii_string(max_length, empty=False):
-    return get_char_sequence(string.ascii_letters,
+    """
+    Example:
+
+    >>> import string
+    >>> sample_string =  get_ascii_string(10)
+    >>>
+
+    @param max_length:
+    @param empty:
+    @return:
+    """
+    return get_char_sequence(ASCII_TABLE,
         random.randint(empty and 1 or 0, max_length))
 
 
 def get_string(max_length, empty=False):
+    """
+    Creates a random length non-empty string. If `empty` is set to True,
+    an empty string can be generated.
+
+    Example:
+
+    >>> string_sample = get_string(10)
+    >>> assert isinstance(string_sample, basestring)
+    >>>
+    >>> string_sample = get_string(10, True)
+    >>> assert isinstance(string_sample, basestring)
+
+    @param max_length:
+    @param empty:
+    @return:
+    """
     return get_char_sequence(string.printable,
         random.randint(empty and 1 or 0, max_length))
 
@@ -444,3 +470,17 @@ def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     name = get_char_sequence(char_table, max_length - len(extension))
 
     return name + extension
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Data Factory argument parser.')
+    parser.add_argument('-t', '--test', action='store_true', help="Run tests")
+
+    args = parser.parse_args()
+
+    if args.test:
+        import doctest
+        doctest.testmod(verbose=True)
+
