@@ -388,7 +388,7 @@ def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
     @return: proper normalized hostname string.
     """
     assert 0 < length < 256  # up to 255
-    assert reduce(lambda x, y: max(len(x), len(y)), extensions) < max_length, \
+    assert reduce(max, map(len, extensions)) < max_length, \
         error_msgs["max_length_ext"]
 
     extension = random.choice(extensions)
@@ -457,12 +457,30 @@ def get_url(max_length, safe=False, port_number=""):
 def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     """
 
+    Example:
+
+    >>> import tempfile
+    >>> import os
+    >>> from os import path
+    >>>
+    >>> new_filename = get_filename(50)
+    >>> assert isinstance(new_filename, basestring)
+    >>> name, ext = path.splitext(new_filename)
+    >>> assert ext in (".txt", ".odt", ".pdf")
+    >>>
+    >>> tempfolder = tempfile.mkdtemp()
+    >>> abs_filename = path.join(tempfolder, new_filename)
+    >>> file = open(abs_filename, 'w')
+    >>> file.close()
+    >>> assert path.exists(abs_filename)
+    >>>
+
 
     @param max_length: max length for the randomly generated filename.
     @param extensions:
     @return: filename string using one of the informed extensions.
     """
-    assert reduce(lambda x, y: max(len(x), len(y)), extensions) < max_length, \
+    assert reduce(max, map(len, extensions)) < max_length, \
         error_msgs["max_length_ext"]
 
     char_table = re.sub(r'[/\?%*:|"<>]', '', string.printable)
@@ -477,10 +495,16 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Data Factory argument parser.')
     parser.add_argument('-t', '--test', action='store_true', help="Run tests")
+    parser.add_argument('-v', '--verbose', action='store_true')
 
     args = parser.parse_args()
 
+    verbose = False
+
+    if args.verbose:
+        verbose = True
+
     if args.test:
         import doctest
-        doctest.testmod(verbose=True)
+        doctest.testmod(verbose=verbose)
 
