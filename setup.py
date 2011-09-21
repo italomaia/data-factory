@@ -1,5 +1,14 @@
 # -*- coding:utf-8 -*-
 
+"""
+Data-Factory
+------------
+
+Data-Factory is a simple random data generator library that
+aims to make easier to generate random data for databases
+or object factories.
+"""
+
 from setuptools import setup
 
 setup(
