@@ -36,11 +36,13 @@ def or_null(fnc, frequency=0.5):
 
     Example:
 
-    >>> int_or_null = or_null(lambda: 10, 0.2)()  # returns a tiny integer or None
+    >>> # returns a tiny integer or None
+    >>> int_or_null = or_null(lambda: 10, 0.2)()
     >>> assert (int_or_null is None or isinstance(int_or_null, int))
     >>>
     >>> # test with arguments
-    >>> str_or_null = or_null(lambda length: length * 'c')(30)  # returns a non empty string or None
+    >>> # returns a non empty string or None
+    >>> str_or_null = or_null(lambda length: length * 'c')(30)
     >>> assert (str_or_null is None or isinstance(str_or_null, basestring))
 
     @param fnc:
@@ -289,7 +291,8 @@ def get_string(max_length, empty=False):
 
 def get_text(max_length, empty=False):
     """
-    Returns a string with variable size that might contain the newline character.
+    Returns a string with variable size that might contain the newline
+    character.
 
     @param max_length: max length for randomly generated text strings.
     @param empty: allow empty text strings?
@@ -335,8 +338,8 @@ def get_datetime(from_date, to_date=None):
     Creates a datetime in the past or in the future.
 
     @param from_date: limit date in the past random datetime will be generated.
-    @param to_date: limit date in the future  random datetime will be generated.
-    If not informed, generated datetime will be in the past.
+    @param to_date: limit date in the future  random datetime will be
+    generated. If not informed, generated datetime will be in the past.
     @return: datetime between from_date and to_date
     """
     now = datetime.now()
@@ -346,7 +349,7 @@ def get_datetime(from_date, to_date=None):
     if now == to_date or random.choice([True, False]):  # past
         target = to_past
         operator = lambda x, y: x - y
-    else :  # future
+    else:  # future
         target = to_future
         operator = lambda x, y: x + y
 
@@ -358,20 +361,20 @@ def get_datetime(from_date, to_date=None):
 
 def get_hostname_label(length):
     """
-    A hostname is formed by a series of labels joined with dots. This method should
-    be used for that purpose.
+    A hostname is formed by a series of labels joined with dots. This
+    method should be used for that purpose.
 
     @param length: length of the generated hostname.
     @return:
     """
     assert 0 < length < 64
 
-    char_table =  string.ascii_letters + string.digits
-    char_table_with_hyphen =  string.ascii_letters + string.digits + "-"
+    char_table = string.ascii_letters + string.digits
+    char_table_with_hyphen = string.ascii_letters + string.digits + "-"
     local_str = ""
 
     for i in range(length):
-        if i == 0 or i == length-1:
+        if i == 0 or i == length - 1:
             local_str += random.choice(char_table)
         else:
             local_str += random.choice_with_hyphen(char_table)
@@ -381,7 +384,8 @@ def get_hostname_label(length):
 
 def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
     """
-    Creates an hostname with length up to max_length using one of the informed extensions.
+    Creates an hostname with length up to max_length using one of the
+    informed extensions.
 
     @param max_length: max length for randomly generated hostname.
     @param extensions: iterable with possible extensions for hostname.
@@ -433,7 +437,7 @@ def get_email(local_length, domain_length):
     domain_part = get_hostname(domain_length)
     return local_part + '@' + domain_part
 
-# TODO implement
+
 def get_url(max_length, safe=False, port_number=""):
     """
 
@@ -493,7 +497,8 @@ def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='Data Factory argument parser.')
+    parser = argparse.ArgumentParser(description='Data Factory '
+                                                 'argument parser.')
     parser.add_argument('-t', '--test', action='store_true', help="Run tests")
     parser.add_argument('-v', '--verbose', action='store_true')
 
@@ -507,4 +512,3 @@ if __name__ == "__main__":
     if args.test:
         import doctest
         doctest.testmod(verbose=verbose)
-
