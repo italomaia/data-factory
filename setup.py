@@ -12,7 +12,7 @@ or object factories.
 from setuptools import setup
 
 setup(
-    version="0.2",
+    version="0.3",
     name="data-factory",
     author="Italo Maia",
     author_email="italo.maia@gmail.com",

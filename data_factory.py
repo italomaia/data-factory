@@ -334,10 +334,34 @@ def get_from_choices(choices):
 def get_boolean():
     return get_from_choices((True, False))
 
-
-def get_datetime(from_date, to_date=None):
+# TODO broken
+def get_datetime(from_date=None, to_date=None):
     """
     Creates a datetime in the past or in the future.
+
+    Example:
+
+    >>> # test for date in past
+    >>> target_date = datetime(year=2005, month=4, day=13)
+    >>> date_in_past = get_datetime(target_date)
+    >>> assert isinstance(date_in_past, datetime)
+    >>> assert target_date <= date_in_past
+    >>> assert date_in_past <= datetime.now()
+    >>>
+    >>> # test for date in the future
+    >>> target_date = datetime.now() + timedelta(days=100)
+    >>> date_in_future = get_datetime(to_date=target_date)
+    >>> assert isinstance(date_in_future, datetime)
+    >>> assert target_date >= date_in_future
+    >>> assert date_in_future >= datetime.now()
+    >>>
+    >>> # test for date in past or future
+    >>> pdate = datetime.now() - timedelta(days=100)
+    >>> fdate = datetime.now() + timedelta(days=100)
+    >>> rdate = get_datetime(pdate, fdate)
+    >>> assert isinstance(rdate, datetime)
+    >>> assert pdate <= rdate
+    >>> assert fdate >= rdate
 
     @param from_date: limit date in the past random datetime will be generated.
     @param to_date: limit date in the future  random datetime will be
@@ -345,26 +369,42 @@ def get_datetime(from_date, to_date=None):
     @return: datetime between from_date and to_date
     """
     now = datetime.now()
+
     to_date = to_date or now
-    to_past, to_future = now - from_date, to_date - now
+    from_date = from_date or now
 
-    if now == to_date or random.choice([True, False]):  # past
-        target = to_past
-        operator = lambda x, y: x - y
-    else:  # future
-        target = to_future
-        operator = lambda x, y: x + y
+    past_delta = now - from_date  # timedelta
+    future_delta = to_date - now  # timedelta
 
-    days = random.randint(0, target.days)
-    seconds = random.randint(0, target.seconds)
-    microseconds = random.randint(0, target.microseconds)
-    return operator(now, timedelta(days, seconds, microseconds))
+    # seconds to the past
+    past_delta_in_seconds = past_delta.total_seconds()
+
+    # seconds to the future
+    future_delta_in_seconds = future_delta.total_seconds()
+
+    rp_delta_in_seconds = random.randint(0, int(past_delta_in_seconds))
+    rf_delta_in_seconds = random.randint(0, int(future_delta_in_seconds))
+
+    # result can be negative or positive
+    delta_in_seconds = rf_delta_in_seconds - rp_delta_in_seconds  # in seconds
+
+    return now + timedelta(seconds=delta_in_seconds)
 
 
 def get_hostname_label(length):
     """
     A hostname is formed by a series of labels joined with dots. This
     method should be used for that purpose.
+
+    Example:
+
+    >>> hostname_label = get_hostname_label(20)
+    >>> assert isinstance(hostname_label, basestring)
+    >>> assert len(hostname_label) == 20
+    >>>
+    >>> hostname_label = get_hostname_label(30)
+    >>> assert isinstance(hostname_label, basestring)
+    >>> assert len(hostname_label) == 30
 
     @param length: length of the generated hostname.
     @return:
@@ -379,7 +419,7 @@ def get_hostname_label(length):
         if i == 0 or i == length - 1:
             local_str += random.choice(char_table)
         else:
-            local_str += random.choice_with_hyphen(char_table)
+            local_str += random.choice(char_table_with_hyphen)
 
     return local_str
 
@@ -408,6 +448,12 @@ def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
 def get_email_local_part(length):
     """
     Creates an email local part.
+
+    Example:
+
+    >>> email_local_part = get_email_local_part(20)
+    >>> assert isinstance(email_local_part, basestring)
+    >>> assert len(email_local_part) == 20
 
     @see http://en.wikipedia.org/wiki/Email_address#Syntax
     """
