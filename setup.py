@@ -10,6 +10,6 @@ setup(
     url="https://github.com/italomaia/data-factory",
     keywords="data factory testing",
     description="Simple collection of data generating functions very useful for testing software.",
-    package_dir={'': 'src'},
-    packages=[],
+    package_dir=["src"],
+    py_modules=["data_factory"],
 )
