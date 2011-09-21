@@ -3,6 +3,7 @@
 import re
 import string
 import random
+import mimetypes
 
 from decimal import Decimal
 from datetime import datetime, timedelta
@@ -14,6 +15,7 @@ MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808l, 9223372036854775807l
 
 ASCII_TABLE = ''.join([chr(i) for i in range(128)])
 BINARY_TABLE = '01'
+
 
 error_msgs = {}
 error_msgs["max_length"] = "Informed max_length is too small."
@@ -425,7 +427,8 @@ def get_email_local_part(length):
 
 def get_email(local_length, domain_length):
     """
-    domain as ipaddress and local part between double quotes are ignored
+    Creates an valid email address.
+    domain as ip address and local part between double quotes are ignored
 
     @see http://en.wikipedia.org/wiki/Email_address#Syntax
     """
@@ -457,7 +460,81 @@ def get_url(max_length, safe=False, port_number=""):
     return protocol + get_hostname(hostname_max_length) + port_number
 
 
-# TODO implement
+def get_ip_address_str(*args, **kw):
+    """
+    Helper function that returns the ip_address in string format.
+    Accept same parameters as get_ip_address.
+
+    @return: string ip address
+    """
+    ip_address = get_ip_address(*args, **kw)
+
+    if kw['v'] == 4:
+        return '.'.join(map(str, ip_address))
+    elif kw['v'] == 6:
+        return ':'.join(map(lambda n: hex(n)[2:], ip_address))
+
+
+def get_ip_address(valid=True, v=4):
+    '''
+    Generates a valid IPV4/6 address
+
+    Invalid addresses for IPV4:
+     - [0] 10.x.x.x
+     - [1] 192.168.x.x
+     - [2] 172.16.0.0 to 172.31.255.255
+
+    Example:
+
+    >>> ip_address = get_ip_address()
+    >>> assert isinstance(ip_address, list)
+    >>> assert len(ip_address) == 4
+    >>>
+    >>> ip_address = get_ip_address(False)
+    >>> assert isinstance(ip_address, list)
+    >>> assert [0, 0, 0, 0] <= ip_address
+    >>> assert ip_address <= [255, 255, 255, 255]
+    >>>
+    >>> ip_address = get_ip_address(v=6)
+    >>> assert isinstance(ip_address, list)
+    >>> assert len(ip_address) == 8
+
+    @param valid: generated ip_address must be valid (only works with ipv4)
+    @param v: ip version compliance (4 or 6)
+    @return: list with ip address values
+    '''
+
+    if v == 4:
+        while True:
+            ad = [random.randint(0, 255) for i in range(4)]
+
+            if valid:
+                if ad[0] == 10:
+                    continue
+                if (ad[0], ad[1]) == (192, 168):
+                    continue
+                if (172, 16, 0, 0) <= ad <= (172, 31, 255, 255):
+                    continue
+            return ad
+
+    elif v == 6:
+        return [random.randint(0, 65535) for i in range(8)]
+
+
+def get_mime_type():
+    """
+
+    Example:
+
+    >>> mime_type = get_mime_type()
+    >>> assert isinstance(mime_type, basestring)
+    >>> assert mime_type in mimetypes.types_map.values()
+
+    @return:
+    """
+    return random.choice(mimetypes.types_map.values())
+
+
 def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     """
 
