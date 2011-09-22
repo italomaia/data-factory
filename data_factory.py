@@ -325,7 +325,14 @@ def get_from_choices(choices):
     """
     Generates value from the given choices. Choices can not be a empty list.
     This is actually a thin wrapper around random.choice.
-    @param choices:
+
+    Example:
+
+    >>> possible_vacation_spots = ("bahamas", "brazil", "england")
+    >>> vacation_spot = get_from_choices(possible_vacation_spots)
+    >>> assert vacation_spot in possible_vacation_spots
+
+    @param choices: iterable with possible results
     @return:
     """
     return random.choice(choices)
