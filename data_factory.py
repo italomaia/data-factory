@@ -11,14 +11,14 @@ from datetime import datetime, timedelta
 
 
 # fix for python3 >= version
-if sys.version >= (3, 0):
+if sys.version_info >= (3, 0):
     unichr = chr
 
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
 MIN_SMALL_INT, MAX_SMALL_INT = -32768, 32767  # 16bits integer
 MIN_INT, MAX_INT = -2147483648, 2147483647
-MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808l, 9223372036854775807l
+MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808, 9223372036854775807
 
 ASCII_TABLE = ''.join([chr(i) for i in range(255)])
 BINARY_TABLE = '01'
@@ -321,7 +321,7 @@ def get_unicode(max_length, empty=False):
     @param empty:
     @return: randomly generated unicode string
     """
-    return u''.join(
+    return ''.join(
         [unichr(random.randint(0, sys.maxunicode))
         for i in range(random.randint(empty and 1 or 0, max_length))])
 
