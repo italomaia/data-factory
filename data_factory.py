@@ -317,8 +317,8 @@ def get_slug(max_length, empty=False):
 
 
 # TODO implement
-def get_xml():
-    pass
+#def get_xml():
+#    pass
 
 
 def get_from_choices(choices):
@@ -332,6 +332,16 @@ def get_from_choices(choices):
 
 
 def get_boolean():
+    """
+    Example:
+
+    >>> lucky_guess = get_boolean()
+    >>> assert isinstance(lucky_guess, bool)
+    >>> assert lucky_guess in (True, False)
+
+
+    @return: True or False
+    """
     return get_from_choices((True, False))
 
 # TODO broken
