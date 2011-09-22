@@ -6,6 +6,7 @@ import string
 import random
 import mimetypes
 
+from functools import reduce
 from decimal import Decimal
 from datetime import datetime, timedelta
 
@@ -13,6 +14,7 @@ from datetime import datetime, timedelta
 # fix for python3 >= version
 if sys.version_info >= (3, 0):
     unichr = chr
+    basestring = unicode = str
 
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
@@ -602,7 +604,7 @@ def get_ip_address(valid=True, v=4):
                     continue
                 if (ad[0], ad[1]) == (192, 168):
                     continue
-                if (172, 16, 0, 0) <= ad <= (172, 31, 255, 255):
+                if [172, 16, 0, 0] <= ad <= [172, 31, 255, 255]:
                     continue
             return ad
 
@@ -621,7 +623,8 @@ def get_mime_type():
 
     @return:
     """
-    return random.choice(mimetypes.types_map.values())
+    types_tuple = tuple(mimetypes.types_map.values())
+    return random.choice(types_tuple)
 
 
 def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
