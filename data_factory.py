@@ -258,9 +258,8 @@ def get_ascii_string(max_length, empty=False):
     """
     Example:
 
-    >>> import string
-    >>> sample_string =  get_ascii_string(10)
-    >>>
+    >>> sample_string = get_ascii_string(10)
+    >>> assert isinstance(sample_string, basestring)
 
     @param max_length:
     @param empty:
@@ -288,19 +287,6 @@ def get_string(max_length, empty=False):
     @return:
     """
     return get_char_sequence(string.printable,
-        random.randint(empty and 1 or 0, max_length))
-
-
-def get_text(max_length, empty=False):
-    """
-    Returns a string with variable size that might contain the newline
-    character.
-
-    @param max_length: max length for randomly generated text strings.
-    @param empty: allow empty text strings?
-    @return:
-    """
-    return get_char_sequence(string.printable + '\n',
         random.randint(empty and 1 or 0, max_length))
 
 

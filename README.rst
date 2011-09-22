@@ -26,6 +26,10 @@ object factory as it implements most raw generators needed for an object factory
 
 Supported data
 ==============
+- None (with or_null)
+- Boolean
+- Choices (pick from list)
+- DateTime
 - Tiny integer (and positive tiny integer)
 - Small integer (and positive small integer)
 - Integer (and positive integer)
@@ -34,7 +38,7 @@ Supported data
 - Float (and positive float)
 - Binary
 - String
-- Text (string with newline character)
+- ASCII String
 - Slug_
 
 
