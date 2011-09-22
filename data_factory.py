@@ -337,13 +337,17 @@ def get_boolean():
     """
     return get_from_choices((True, False))
 
-# TODO broken
+
 def get_datetime(from_date=None, to_date=None):
     """
     Creates a datetime in the past or in the future.
 
     Example:
 
+    >>> # test for date in the present
+    >>> date_in_present = get_datetime()
+    >>> assert isinstance(date_in_present, datetime)
+    >>>
     >>> # test for date in past
     >>> target_date = datetime(year=2005, month=4, day=13)
     >>> date_in_past = get_datetime(target_date)
