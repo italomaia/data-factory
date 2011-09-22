@@ -39,6 +39,7 @@ Supported data
 - Binary
 - String
 - ASCII String
+- Unicode String
 - Slug_
 
 

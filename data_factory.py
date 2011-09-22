@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import re
+import sys
 import string
 import random
 import mimetypes
@@ -8,12 +9,18 @@ import mimetypes
 from decimal import Decimal
 from datetime import datetime, timedelta
 
+
+# fix for python3 >= version
+if sys.version >= (3, 0):
+    unichr = chr
+
+
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
 MIN_SMALL_INT, MAX_SMALL_INT = -32768, 32767  # 16bits integer
 MIN_INT, MAX_INT = -2147483648, 2147483647
 MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808l, 9223372036854775807l
 
-ASCII_TABLE = ''.join([chr(i) for i in range(128)])
+ASCII_TABLE = ''.join([chr(i) for i in range(255)])
 BINARY_TABLE = '01'
 
 
@@ -241,7 +248,7 @@ def get_char_sequence(table, length):
     @param length: length for the given string.
     @return: randomly generated str with given length.
     """
-    return u''.join([random.choice(table) for i in range(length)])
+    return ''.join([random.choice(table) for i in range(length)])
 
 
 def get_binary(length):
@@ -288,6 +295,35 @@ def get_string(max_length, empty=False):
     """
     return get_char_sequence(string.printable,
         random.randint(empty and 1 or 0, max_length))
+
+
+def get_unicode(max_length, empty=False):
+    """
+    Gets you a unicode string. Character range depends in the UCS your python
+    was configured with (UCS2/UCS4).
+
+    Example:
+
+    >>> unicode_string = get_unicode(20)
+    >>> assert isinstance(unicode_string, basestring)
+    >>> assert isinstance(unicode_string, unicode)
+    >>> assert 1 <= len(unicode_string)
+    >>> assert len(unicode_string) <= 20
+    >>>
+    >>> unicode_string = get_unicode(20, True)
+    >>> assert isinstance(unicode_string, basestring)
+    >>> assert isinstance(unicode_string, unicode)
+    >>> assert 0 <= len(unicode_string)
+    >>> assert len(unicode_string) <= 20
+
+    @see: http://pyref.infogami.com/unichr
+    @param max_length:
+    @param empty:
+    @return: randomly generated unicode string
+    """
+    return u''.join(
+        [unichr(random.randint(0, sys.maxunicode))
+        for i in range(random.randint(empty and 1 or 0, max_length))])
 
 
 def get_slug(max_length, empty=False):
