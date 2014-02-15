@@ -1,27 +1,30 @@
 Data Factory
 ============
 Data factory is a simple data generator easily coupled with your web project. It's main use is to
-generate test data for your **orm** during tests.
+generate data for your **orm** during tests.
 
 Random
 ======
-All data generated with data-factory is **random**. That means a factory method does not **always** return a same value.
-This is very important because if used in tests, a method that returns only one value covers the TestCase for that
-value alone.
+All data generated with data-factory is **pseudo-random**. That means a factory
+method does not **always** return the same value, but it always return the
+same "kind of value" you would expect. This is very important because
+this way your tests became **fuzzy**.
 
-If you have a field that can receive a integer and you always give it the same number for testing purpose,
-your field will ONLY be tested for that particular number.
+If you have a field in your model that can receive a integer of any kind and
+you always give it the same number for testing purpose, your field will *ONLY*
+be tested for that particular number.
 
-If you test your field with data from a range of numbers, like [1,2,3,4,5] even if only one of these numbers is
-randomly picked, your field test is safe for that range of numbers (theoretically). The one thing you got to
-know is that your tests are better with random data, even if from a finite set of options. Always. If your
-set of data covers all the possible input data, even better!
+If you test your model field with data from a range of numbers,
+like [1,2,3,4,5] even if only one of these numbers is randomly picked each time,
+your field test is safe for that range of numbers (theoretically). That's fuzzy
+testing!
 
 What Data Factory is NOT!
 =========================
-DataFactory_ is not a object factory for ORMs like ModelMommy_ or DynamicFixture_ as it
-only creates raw data, however, DataFactory_ could be easily used to power up a
-object factory as it implements most raw generators needed for an object factory.
+DataFactory_ is not a object factory for ORM's, like ModelMommy_ or
+DynamicFixture_. It only creates the right raw fuzzy data that you ask.
+However, DataFactory_ could be easily used to power up a object factory as
+it tries to give you just the right range for the most common types.
 
 
 Supported data
