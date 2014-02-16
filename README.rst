@@ -49,7 +49,11 @@ Supported data
 Usage
 =====
 
->>> from data_factory import get_integer
+>>> from data_factory import make_integer
+>>>
+>>> random_integer = make_integer()  # gets you a 32bits random integer
+
+
 >>>
 >>> random_integer = get_integer()  # gets you a 32bits random integer
 

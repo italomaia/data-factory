@@ -22,6 +22,9 @@ MIN_SMALL_INT, MAX_SMALL_INT = -32768, 32767  # 16bits integer
 MIN_INT, MAX_INT = -2147483648, 2147483647
 MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808, 9223372036854775807
 
+REAL_DIGITS = 23
+DOUBLE_DIGITS = 53
+
 ASCII_TABLE = ''.join([chr(i) for i in range(255)])
 BINARY_TABLE = '01'
 
@@ -31,34 +34,39 @@ error_msgs["max_length"] = "Informed max_length is too small."
 error_msgs["max_length_ext"] = "max_length is too small for given extensions"
 
 
-def _positive(number):
-    """
-    Generates the corresponding unsigned integer for a max integer value.
+def __make_decimal_str(max_digits, digits=None, precision=None):
+    digits = digits or random.randint(1, max_digits)
+    precision = precision or random.randint(0, digits)
 
-    @param number:
-    @return:
+    assert precision < digits
+    assert digits <= max_digits
+
+    number = [random.choice(string.digits) for i in range(random.randint(1, digits))]
+    fraction = [random.choice(string.digits) for i in range(random.randint(0, digits - len(number)))]
+    return "%s.%s" % (number, fraction)
+
+
+def unsigned(number):
+    """
+    Generates the corresponding unsigned integer for ``number``
+
+    Arguments:
+    number -- some integer value
+
     """
     return number * 2 + 1
 
 
 def or_null(fnc, frequency=0.5):
     """
-    Used to allow the return of null value for a fabric method.
+    Decorates a function so that it may return ``null``
 
-    Example:
+    Arguments:
+    fnc -- factory function
 
-    >>> # returns a tiny integer or None
-    >>> int_or_null = or_null(lambda: 10, 0.2)()
-    >>> assert (int_or_null is None or isinstance(int_or_null, int))
-    >>>
-    >>> # test with arguments
-    >>> # returns a non empty string or None
-    >>> str_or_null = or_null(lambda length: length * 'c')(30)
-    >>> assert (str_or_null is None or isinstance(str_or_null, basestring))
+    Keyword arguments:
+    frequency -- how often you should get a null value
 
-    @param fnc:
-    @param frequency:
-    @return:
     """
     def _fnc(*args, **kw):
         if random.random() < frequency:
@@ -68,138 +76,84 @@ def or_null(fnc, frequency=0.5):
     return _fnc
 
 
-def get_tiny_integer():
+def make_tiny_integer():
     """
-    Returns a 8bits integer.
+    Returns a 8bits complement 2 signed integer.
 
-    Example:
-
-    >>> tiny_integer = get_tiny_integer()
-    >>> assert MIN_TINY_INT <= tiny_integer
-    >>> assert tiny_integer <= MAX_TINY_INT
-    >>> assert isinstance(tiny_integer, int)
-
-    @return: int complainant with 8bits integer
     """
     return random.randint(MIN_TINY_INT, MAX_TINY_INT)
 
 
-def get_small_integer():
+def make_small_integer():
     """
-    Returns a 16bits integer.
+    Returns a 16bits complement 2 signed integer.
 
-    Example:
-
-    >>> small_integer = get_small_integer()
-    >>> assert MIN_SMALL_INT <= small_integer
-    >>> assert small_integer <= MAX_SMALL_INT
-    >>> assert isinstance(small_integer, int)
-
-    @return: int complainant with 16bits integer
     """
     return random.randint(MIN_SMALL_INT, MAX_SMALL_INT)
 
 
-def get_integer():
+def make_integer():
     """
-    Returns a 32bits integer.
+    Returns a 32bits complement 2 signed integer.
 
-    @return: int complainant with 32bits integer
     """
     return random.randint(MIN_INT, MAX_INT)
 
 
-def get_big_integer():
+def make_big_integer():
     """
+    Returns a 64bits complement 2 signed integer.
 
-    Example:
-
-    >>> big_integer = get_big_integer()
-    >>> assert MIN_BIG_INT <= big_integer <= MAX_BIG_INT
-    >>> assert isinstance(big_integer, int) or isinstance(big_integer, long)
-
-    @return: int complainant with 64bits integer
     """
     return random.randint(MIN_BIG_INT, MAX_BIG_INT)
 
 
-def get_positive_tiny_integer():
+def make_unsigned_tiny_integer():
     """
-    Returns a integer that corresponds to a unsigned 8bits integer.
+    Returns a 8bits complement 2 unsigned integer.
 
-    Example:
-
-    >>> positive_tiny_integer = get_positive_tiny_integer()
-    >>> assert 0 <= positive_tiny_integer <= _positive(MAX_TINY_INT)
-
-    @return: int complainant with unsigned 8bits integer
     """
-    return random.randint(0, _positive(MAX_TINY_INT))
+    return random.randint(0, unsigned(MAX_TINY_INT))
 
 
-def get_positive_small_integer():
+def make_unsigned_small_integer():
     """
+    Returns a 16bits complement 2 unsigned integer.
 
-    Example:
-
-    >>> positive_small_integer = get_positive_small_integer()
-    >>> assert 0 <= positive_small_integer <= _positive(MAX_SMALL_INT)
-
-    @return: int complainant with unsigned 16bits integer
     """
-    return random.randint(0, _positive(MAX_SMALL_INT))
+    return random.randint(0, unsigned(MAX_SMALL_INT))
 
 
-def get_positive_integer():
+def make_unsigned_integer():
     """
+    Returns a 32bits complement 2 unsigned integer.
 
-    Example:
-
-    >>> positive_integer = get_positive_integer()
-    >>> assert 0 <= positive_integer <= _positive(MAX_INT)
-
-    @return: int complainant with unsigned 32bits integer
     """
-    return random.randint(0, _positive(MAX_INT))
+    return random.randint(0, unsigned(MAX_INT))
 
 
-def get_positive_big_integer():
+def make_unsigned_big_integer():
     """
+    Returns a 64bits complement 2 unsigned integer.
 
-    Example:
-
-    >>> positive_big_integer = get_positive_big_integer()
-    >>> assert 0 <= positive_big_integer <= _positive(MAX_BIG_INT)
-
-    @return: int complainant with unsigned 64bits integer
     """
-    return random.randint(0, _positive(MAX_BIG_INT))
+    return random.randint(0, unsigned(MAX_BIG_INT))
 
 
-def get_float():
+def make_real(digits=None, precision=None):
     """
+    Returns a 4bytes floating point number.
 
-    Example:
-    >>> float_number = get_float()
-    >>> assert isinstance(float_number, float)
-
-    @return:
     """
-    return random.random() * get_integer()
+    return float(__make_decimal_str(REAL_DIGITS, digits, precision)) * random.choice((1, -1))
 
 
-def get_positive_float():
+def make_double(digits=None, precision=None):
     """
+    Returns a 8bytes floating point number.
 
-    Example:
-
-    >>> positive_float = get_positive_float()
-    >>> assert 0 <= positive_float
-    >>> assert isinstance(positive_float, float)
-
-    @return:
     """
-    return random.random() * get_positive_integer()
+    return float(__make_decimal_str(DOUBLE_DIGITS, digits, precision)) * random.choice((1, -1))
 
 
 def get_positive_decimal(max_digits, decimal_places):
