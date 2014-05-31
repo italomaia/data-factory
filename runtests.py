@@ -190,6 +190,12 @@ class TestMakeDouble(unittest.TestCase, TestRealMixin):
         self.assertLessEqual(result_len, DOUBLE_DIGITS)
 
 
+class TestMakeDecimal(unittest.TestCase, HasMake):
+    def make(self, max_digits=None, decimal_places=None):
+        from data_factory import make_decimal
+        return make_decimal(max_digits, decimal_places)
+
+
 if __name__ == '__main__':
     import sys
 
