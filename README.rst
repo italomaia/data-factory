@@ -38,7 +38,8 @@ Supported data
 - Integer (and positive integer)
 - Big integer (and positive big integer)
 - Decimal (and positive decimal)
-- Real (and positive float)
+- Real
+- Double
 - Binary
 - String
 - ASCII String
