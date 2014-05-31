@@ -7,22 +7,22 @@ Random
 ======
 All data generated with data-factory is **pseudo-random**. That means a factory
 method does not **always** return the same value, but it always return the
-same "kind of value" you would expect. This is very important because
+same "kind of value" you expect. This is very important because
 this way your tests became **fuzzy**.
 
 If you have a field in your model that can receive a integer of any kind and
 you always give it the same number for testing purpose, your field will *ONLY*
 be tested for that particular number.
 
-If you test your model field with data from a range of numbers,
+If you test your model field with data from a range of numbers (like the field domain),
 like [1,2,3,4,5] even if only one of these numbers is randomly picked each time,
-your field test is safe for that range of numbers (theoretically). That's fuzzy
-testing!
+your field test is safe for the whole range of numbers (theoretically). That's
+fuzzy testing!
 
 What Data Factory is NOT!
 =========================
 DataFactory_ is not a object factory for ORM's, like ModelMommy_ or
-DynamicFixture_. It only creates the right raw fuzzy data that you ask.
+DynamicFixture_. It only creates the right raw fuzzy data that you expect.
 However, DataFactory_ could be easily used to power up a object factory as
 it tries to give you just the right range for the most common types.
 
@@ -38,7 +38,7 @@ Supported data
 - Integer (and positive integer)
 - Big integer (and positive big integer)
 - Decimal (and positive decimal)
-- Float (and positive float)
+- Real (and positive float)
 - Binary
 - String
 - ASCII String
