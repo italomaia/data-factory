@@ -19,12 +19,13 @@ if sys.version_info >= (3, 0):
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
 MIN_SMALL_INT, MAX_SMALL_INT = -32768, 32767  # 16bits integer
-MIN_INT, MAX_INT = -2147483648, 2147483647
-MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808, 9223372036854775807
+MIN_INT, MAX_INT = -2147483648, 2147483647  # 32bits integer
+MIN_BIG_INT, MAX_BIG_INT = -9223372036854775808, 9223372036854775807  # 64bits integer
 
 REAL_DIGITS = 23
 DOUBLE_DIGITS = 53
 
+# complete character ascii table
 ASCII_TABLE = ''.join([chr(i) for i in range(255)])
 BINARY_TABLE = '01'
 
@@ -44,6 +45,14 @@ def __make_decimal_str(max_digits, digits=None, precision=None):
     number = [random.choice(string.digits) for i in range(random.randint(1, digits))]
     fraction = [random.choice(string.digits) for i in range(random.randint(0, digits - len(number)))]
     return "%s.%s" % (number, fraction)
+
+
+def choose(choices):
+    """
+    Alias for random.choice
+
+    """
+    return random.choice(choices)
 
 
 def unsigned(number):
@@ -156,47 +165,15 @@ def make_double(digits=None, precision=None):
     return float(__make_decimal_str(DOUBLE_DIGITS, digits, precision)) * random.choice((1, -1))
 
 
-def get_positive_decimal(max_digits, decimal_places):
+def make_decimal(max_digits, decimal_places):
     """
-    Decimal with `max_digits` digits and `decimal_places` decimal places.
+    Decimal with up to ``max_digits`` digits and ``precision`` decimal places.
 
-    Example:
-
-    >>> decimal_number = get_positive_decimal(5, 2)
-    >>> assert isinstance(decimal_number, Decimal)
-    >>> assert 0 <= decimal_number
-    >>> assert decimal_number <= Decimal('999.99')
-
-    @param max_digits:
-    @param decimal_places:
-    @return: positive decimal number with given constrains.
     """
-    numerator = random.randint(0, int('9' * (max_digits - decimal_places)))
-    denominator = get_char_sequence(string.digits, decimal_places)
-    return Decimal("%d.%s" % (numerator, denominator))
+    return Decimal(__make_decimal_str(max_digits, max_digits, decimal_places)) * random.choice((1, -1))
 
 
-def get_decimal(max_digits, decimal_places):
-    """
-    Decimal with `max_digits` digits and `decimal_places` decimal places.
-
-    Example:
-
-    >>> decimal_number = get_decimal(5, 2)
-    >>> assert isinstance(decimal_number, Decimal)
-    >>> assert Decimal('-999.99') <= decimal_number
-    >>> assert decimal_number <= Decimal('999.99')
-
-    @param max_digits:
-    @param decimal_places:
-    @return: decimal number that might be positive or negative.
-    """
-    decimal_number = get_positive_decimal(max_digits, decimal_places)
-    sign = random.choice([True, False]) and 1 or -1
-    return decimal_number * sign
-
-
-def get_char_sequence(table, length):
+def make_char_sequence(table, length):
     """
     Helper method that generates a random string from a char table.
 
@@ -207,14 +184,14 @@ def get_char_sequence(table, length):
     return ''.join([random.choice(table) for i in range(length)])
 
 
-def get_binary(length):
+def make_binary(length):
     """
     Returns a binary string with informed length.
 
     @param length:
     @return: string in the format '01000101...'
     """
-    return get_char_sequence(BINARY_TABLE, length)
+    return make_char_sequence(BINARY_TABLE, length)
 
 
 def get_ascii_string(max_length, empty=False):
@@ -228,7 +205,7 @@ def get_ascii_string(max_length, empty=False):
     @param empty:
     @return:
     """
-    return get_char_sequence(ASCII_TABLE,
+    return make_char_sequence(ASCII_TABLE,
         random.randint(empty and 1 or 0, max_length))
 
 
@@ -249,7 +226,7 @@ def get_string(max_length, empty=False):
     @param empty:
     @return:
     """
-    return get_char_sequence(string.printable,
+    return make_char_sequence(string.printable,
         random.randint(empty and 1 or 0, max_length))
 
 
@@ -290,7 +267,7 @@ def get_slug(max_length, empty=False):
     @param empty: allow empty slugs?
     @return:
     """
-    return get_char_sequence(string.letters + string.digits + '-_',
+    return make_char_sequence(string.letters + string.digits + '-_',
         random.randint(empty and 1 or 0, max_length))
 
 
@@ -299,35 +276,12 @@ def get_slug(max_length, empty=False):
 #    pass
 
 
-def get_from_choices(choices):
+def make_boolean():
     """
-    Generates value from the given choices. Choices can not be a empty list.
-    This is actually a thin wrapper around random.choice.
+    Returns True or False
 
-    Example:
-
-    >>> possible_vacation_spots = ("bahamas", "brazil", "england")
-    >>> vacation_spot = get_from_choices(possible_vacation_spots)
-    >>> assert vacation_spot in possible_vacation_spots
-
-    @param choices: iterable with possible results
-    @return:
     """
-    return random.choice(choices)
-
-
-def get_boolean():
-    """
-    Example:
-
-    >>> lucky_guess = get_boolean()
-    >>> assert isinstance(lucky_guess, bool)
-    >>> assert lucky_guess in (True, False)
-
-
-    @return: True or False
-    """
-    return get_from_choices((True, False))
+    return choose((True, False))
 
 
 def get_datetime(from_date=None, to_date=None):
@@ -432,7 +386,7 @@ def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
     @param extensions: iterable with possible extensions for hostname.
     @return: proper normalized hostname string.
     """
-    assert 0 < length < 256  # up to 255
+    assert 0 < max_length < 256  # up to 255
     assert reduce(max, map(len, extensions)) < max_length, \
         error_msgs["max_length_ext"]
 
@@ -505,14 +459,14 @@ def get_url(max_length, safe=False, port_number=""):
     return protocol + get_hostname(hostname_max_length) + port_number
 
 
-def get_ip_address_str(*args, **kw):
+def make_ip_address_str(*args, **kw):
     """
     Helper function that returns the ip_address in string format.
     Accept same parameters as get_ip_address.
 
     @return: string ip address
     """
-    ip_address = get_ip_address(*args, **kw)
+    ip_address = make_ip_address(*args, **kw)
 
     if kw['v'] == 4:
         return '.'.join(map(str, ip_address))
@@ -520,34 +474,20 @@ def get_ip_address_str(*args, **kw):
         return ':'.join(map(lambda n: hex(n)[2:], ip_address))
 
 
-def get_ip_address(valid=True, v=4):
-    '''
-    Generates a valid IPV4/6 address
+def make_ip_address(valid=True, v=4):
+    """
+    Returns a IPV4/6 address
 
     Invalid addresses for IPV4:
      - [0] 10.x.x.x
      - [1] 192.168.x.x
      - [2] 172.16.0.0 to 172.31.255.255
 
-    Example:
+    Keyword Arguments:
+    valid -- forces created ip address to be valid
+    v -- ip address version
 
-    >>> ip_address = get_ip_address()
-    >>> assert isinstance(ip_address, list)
-    >>> assert len(ip_address) == 4
-    >>>
-    >>> ip_address = get_ip_address(False)
-    >>> assert isinstance(ip_address, list)
-    >>> assert [0, 0, 0, 0] <= ip_address
-    >>> assert ip_address <= [255, 255, 255, 255]
-    >>>
-    >>> ip_address = get_ip_address(v=6)
-    >>> assert isinstance(ip_address, list)
-    >>> assert len(ip_address) == 8
-
-    @param valid: generated ip_address must be valid (only works with ipv4)
-    @param v: ip version compliance (4 or 6)
-    @return: list with ip address values
-    '''
+    """
 
     if v == 4:
         while True:
@@ -566,22 +506,16 @@ def get_ip_address(valid=True, v=4):
         return [random.randint(0, 65535) for i in range(8)]
 
 
-def get_mime_type():
+def make_mime_type():
     """
+    Returns a valid mime type
 
-    Example:
-
-    >>> mime_type = get_mime_type()
-    >>> assert isinstance(mime_type, basestring)
-    >>> assert mime_type in mimetypes.types_map.values()
-
-    @return:
     """
     types_tuple = tuple(mimetypes.types_map.values())
     return random.choice(types_tuple)
 
 
-def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
+def make_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     """
 
     Example:
@@ -590,7 +524,7 @@ def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     >>> import os
     >>> from os import path
     >>>
-    >>> new_filename = get_filename(50)
+    >>> new_filename = make_filename(50)
     >>> assert isinstance(new_filename, basestring)
     >>> name, ext = path.splitext(new_filename)
     >>> assert ext in (".txt", ".odt", ".pdf")
@@ -612,26 +546,6 @@ def get_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
 
     char_table = re.sub(r'[/\?%*:|"<>]', '', string.printable)
     extension = random.choice(extensions)
-    name = get_char_sequence(char_table, max_length - len(extension))
+    name = make_char_sequence(char_table, max_length - len(extension))
 
     return name + extension
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description='Data Factory '
-                                                 'argument parser.')
-    parser.add_argument('-t', '--test', action='store_true', help="Run tests")
-    parser.add_argument('-v', '--verbose', action='store_true')
-
-    args = parser.parse_args()
-
-    verbose = False
-
-    if args.verbose:
-        verbose = True
-
-    if args.test:
-        import doctest
-        doctest.testmod(verbose=verbose)
