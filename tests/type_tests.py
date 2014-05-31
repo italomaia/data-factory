@@ -9,13 +9,24 @@ if sys.version < '3':
     integer_types += (long,)
 
 
-
 class HasMake(object):
     def make(self):
         raise NotImplemented()
 
 
-class TestIntegerMixin(HasMake):
+class IsIntegerMixin(HasMake):
+    def test_makes_integer(self):
+        result = self.make()
+        self.assertIn(type(result), integer_types)
+
+
+class IsRealMixin(HasMake):
+    def test_makes_float(self):
+        result = self.make()
+        self.assertEqual(type(result), float)
+
+
+class IntegerIsInBoundsMixin(IsIntegerMixin):
     def make(self):
         raise NotImplemented()
 
@@ -33,17 +44,13 @@ class TestIntegerMixin(HasMake):
         result = self.make()
         self.assertLessEqual(result, self.get_upper_bound())
 
-    def test_makes_integer(self):
-        result = self.make()
-        self.assertIn(type(result), integer_types)
 
-
-class TestUnsignedIntegerMixin(TestIntegerMixin):
+class UnsignedIntegerMixin(IntegerIsInBoundsMixin):
     def get_lower_bound(self):
         return 0
 
     def get_upper_bound(self):
-        return super(TestUnsignedIntegerMixin, self).get_upper_bound() * 2 + 1
+        return super(UnsignedIntegerMixin, self).get_upper_bound() * 2 + 1
 
 
 class TestOrNull(unittest.TestCase):
@@ -71,7 +78,7 @@ class TestOrNull(unittest.TestCase):
         self.assertIn(self.fnc(), result)
 
 
-class TestMakeTinyInteger(unittest.TestCase, TestIntegerMixin):
+class TestMakeTinyInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def get_lower_bound(self):
         from data_factory import MIN_TINY_INT
         return MIN_TINY_INT
@@ -85,7 +92,7 @@ class TestMakeTinyInteger(unittest.TestCase, TestIntegerMixin):
         return make_tiny_integer()
 
 
-class TestMakeSmallInteger(unittest.TestCase, TestIntegerMixin):
+class TestMakeSmallInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def get_lower_bound(self):
         from data_factory import MIN_SMALL_INT
         return MIN_SMALL_INT
@@ -99,7 +106,7 @@ class TestMakeSmallInteger(unittest.TestCase, TestIntegerMixin):
         return make_small_integer()
 
 
-class TestMakeInteger(unittest.TestCase, TestIntegerMixin):
+class TestMakeInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def make(self):
         from data_factory import make_integer
         return make_integer()
@@ -113,7 +120,7 @@ class TestMakeInteger(unittest.TestCase, TestIntegerMixin):
         return MAX_INT
 
 
-class TestMakeBigInteger(unittest.TestCase, TestIntegerMixin):
+class TestMakeBigInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def make(self):
         from data_factory import make_big_integer
         return make_big_integer()
@@ -127,25 +134,25 @@ class TestMakeBigInteger(unittest.TestCase, TestIntegerMixin):
         return MAX_BIG_INT
 
 
-class TestMakeUnsignedTinyInteger(TestUnsignedIntegerMixin, TestMakeTinyInteger):
+class TestMakeUnsignedTinyInteger(UnsignedIntegerMixin, TestMakeTinyInteger):
     def make(self):
         from data_factory import make_unsigned_tiny_integer
         return make_unsigned_tiny_integer()
 
 
-class TestMakeUnsignedSmallInteger(TestUnsignedIntegerMixin, TestMakeSmallInteger):
+class TestMakeUnsignedSmallInteger(UnsignedIntegerMixin, TestMakeSmallInteger):
     def make(self):
         from data_factory import make_unsigned_small_integer
         return make_unsigned_small_integer()
 
 
-class TestMakeUnsignedInteger(TestUnsignedIntegerMixin, TestMakeInteger):
+class TestMakeUnsignedInteger(UnsignedIntegerMixin, TestMakeInteger):
     def make(self):
         from data_factory import make_unsigned_integer
         return make_unsigned_integer()
 
 
-class TestMakeUnsignedBigInteger(TestUnsignedIntegerMixin, TestMakeBigInteger):
+class TestMakeUnsignedBigInteger(UnsignedIntegerMixin, TestMakeBigInteger):
     def make(self):
         from data_factory import make_unsigned_big_integer
         return make_unsigned_big_integer()
@@ -160,13 +167,7 @@ class TestMakeMimeType(unittest.TestCase, HasMake):
         return self.assertEqual(type(self.make()), str)
 
 
-class TestRealMixin(HasMake):
-    def test_makes_float(self):
-        result = self.make()
-        self.assertEqual(type(result), float)
-
-
-class TestMakeReal(unittest.TestCase, TestRealMixin):
+class TestMakeReal(unittest.TestCase, IsRealMixin):
     def make(self):
         from data_factory import make_real
         return make_real()
@@ -178,7 +179,7 @@ class TestMakeReal(unittest.TestCase, TestRealMixin):
         self.assertLessEqual(result_len, REAL_DIGITS)
 
 
-class TestMakeDouble(unittest.TestCase, TestRealMixin):
+class TestMakeDouble(unittest.TestCase, IsRealMixin):
     def make(self):
         from data_factory import make_double
         return make_double()
