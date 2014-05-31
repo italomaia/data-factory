@@ -44,7 +44,7 @@ def __make_decimal_str(max_digits, digits=None, precision=None):
 
     number = [random.choice(string.digits) for i in range(random.randint(1, digits))]
     fraction = [random.choice(string.digits) for i in range(random.randint(0, digits - len(number)))]
-    return "%s.%s" % (number, fraction)
+    return "%s.%s" % (''.join(number), ''.join(fraction))
 
 
 def choose(choices):
