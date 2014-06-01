@@ -218,11 +218,11 @@ def make_binary(length):
     return make_char_sequence(BINARY_TABLE, length)
 
 
-def get_ascii_string(max_length, empty=False):
+def make_ascii_string(max_length, empty=False):
     """
     Example:
 
-    >>> sample_string = get_ascii_string(10)
+    >>> sample_string = make_ascii_string(10)
     >>> assert isinstance(sample_string, basestring)
 
     @param max_length:
@@ -233,17 +233,17 @@ def get_ascii_string(max_length, empty=False):
         random.randint(empty and 1 or 0, max_length))
 
 
-def get_string(max_length, empty=False):
+def make_string(max_length, empty=False):
     """
     Creates a random length non-empty string. If `empty` is set to True,
     an empty string can be generated.
 
     Example:
 
-    >>> string_sample = get_string(10)
+    >>> string_sample = make_string(10)
     >>> assert isinstance(string_sample, basestring)
     >>>
-    >>> string_sample = get_string(10, True)
+    >>> string_sample = make_string(10, True)
     >>> assert isinstance(string_sample, basestring)
 
     @param max_length:
@@ -254,20 +254,20 @@ def get_string(max_length, empty=False):
         random.randint(empty and 1 or 0, max_length))
 
 
-def get_unicode(max_length, empty=False):
+def make_unicode(max_length, empty=False):
     """
     Gets you a unicode string. Character range depends in the UCS your python
     was configured with (UCS2/UCS4).
 
     Example:
 
-    >>> unicode_string = get_unicode(20)
+    >>> unicode_string = make_unicode(20)
     >>> assert isinstance(unicode_string, basestring)
     >>> assert isinstance(unicode_string, unicode)
     >>> assert 1 <= len(unicode_string)
     >>> assert len(unicode_string) <= 20
     >>>
-    >>> unicode_string = get_unicode(20, True)
+    >>> unicode_string = make_unicode(20, True)
     >>> assert isinstance(unicode_string, basestring)
     >>> assert isinstance(unicode_string, unicode)
     >>> assert 0 <= len(unicode_string)
@@ -283,7 +283,7 @@ def get_unicode(max_length, empty=False):
         for i in range(random.randint(empty and 1 or 0, max_length))])
 
 
-def get_slug(max_length, empty=False):
+def make_slug(max_length, empty=False):
     """
     @see: https://docs.djangoproject.com/en/1.3/ref/models/fields/#slugfield
 
@@ -308,26 +308,26 @@ def make_boolean():
     return choose((True, False))
 
 
-def get_datetime(from_date=None, to_date=None):
+def make_datetime(from_date=None, to_date=None):
     """
     Creates a datetime in the past or in the future.
 
     Example:
 
     >>> # test for date in the present
-    >>> date_in_present = get_datetime()
+    >>> date_in_present = make_datetime()
     >>> assert isinstance(date_in_present, datetime)
     >>>
     >>> # test for date in past
     >>> target_date = datetime(year=2005, month=4, day=13)
-    >>> date_in_past = get_datetime(target_date)
+    >>> date_in_past = make_datetime(target_date)
     >>> assert isinstance(date_in_past, datetime)
     >>> assert target_date <= date_in_past
     >>> assert date_in_past <= datetime.now()
     >>>
     >>> # test for date in the future
     >>> target_date = datetime.now() + timedelta(days=100)
-    >>> date_in_future = get_datetime(to_date=target_date)
+    >>> date_in_future = make_datetime(to_date=target_date)
     >>> assert isinstance(date_in_future, datetime)
     >>> assert target_date >= date_in_future
     >>> assert date_in_future >= datetime.now()
@@ -335,7 +335,7 @@ def get_datetime(from_date=None, to_date=None):
     >>> # test for date in past or future
     >>> pdate = datetime.now() - timedelta(days=100)
     >>> fdate = datetime.now() + timedelta(days=100)
-    >>> rdate = get_datetime(pdate, fdate)
+    >>> rdate = make_datetime(pdate, fdate)
     >>> assert isinstance(rdate, datetime)
     >>> assert pdate <= rdate
     >>> assert fdate >= rdate
@@ -368,18 +368,18 @@ def get_datetime(from_date=None, to_date=None):
     return now + timedelta(seconds=delta_in_seconds)
 
 
-def get_hostname_label(length):
+def make_hostname_label(length):
     """
     A hostname is formed by a series of labels joined with dots. This
     method should be used for that purpose.
 
     Example:
 
-    >>> hostname_label = get_hostname_label(20)
+    >>> hostname_label = make_hostname_label(20)
     >>> assert isinstance(hostname_label, basestring)
     >>> assert len(hostname_label) == 20
     >>>
-    >>> hostname_label = get_hostname_label(30)
+    >>> hostname_label = make_hostname_label(30)
     >>> assert isinstance(hostname_label, basestring)
     >>> assert len(hostname_label) == 30
 
@@ -401,7 +401,7 @@ def get_hostname_label(length):
     return local_str
 
 
-def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
+def make_hostname(max_length, extensions=[".com", ".org", ".net"]):
     """
     Creates an hostname with length up to max_length using one of the
     informed extensions.
@@ -417,18 +417,18 @@ def get_hostname(max_length, extensions=[".com", ".org", ".net"]):
     extension = random.choice(extensions)
 
     max_length -= len(extension)
-    label = get_hostname_label(random.randint(1, min(63, max_length)))
+    label = make_hostname_label(random.randint(1, min(63, max_length)))
 
     return label + extension
 
 
-def get_email_local_part(length):
+def make_email_local_part(length):
     """
     Creates an email local part.
 
     Example:
 
-    >>> email_local_part = get_email_local_part(20)
+    >>> email_local_part = make_email_local_part(20)
     >>> assert isinstance(email_local_part, basestring)
     >>> assert len(email_local_part) == 20
 
@@ -448,7 +448,7 @@ def get_email_local_part(length):
     return local_str
 
 
-def get_email(local_length, domain_length):
+def make_email(local_length, domain_length):
     """
     Creates an valid email address.
     domain as ip address and local part between double quotes are ignored
@@ -459,12 +459,12 @@ def get_email(local_length, domain_length):
     assert 0 < local_length <= 64
     assert 0 < (local_length + domain_length) <= 255
 
-    local_part = get_email_local_part(local_length)
-    domain_part = get_hostname(domain_length)
+    local_part = make_email_local_part(local_length)
+    domain_part = make_hostname(domain_length)
     return local_part + '@' + domain_part
 
 
-def get_url(max_length, safe=False, port_number=""):
+def make_url(max_length, safe=False, port_number=""):
     """
 
     @param max_length:
@@ -480,7 +480,7 @@ def get_url(max_length, safe=False, port_number=""):
     scheme_name = safe and "https" or "http"
     protocol = scheme_name + "://"
     hostname_max_length = max_length - len(protocol) - len(port_number)
-    return protocol + get_hostname(hostname_max_length) + port_number
+    return protocol + make_hostname(hostname_max_length) + port_number
 
 
 def make_ip_address_str(*args, **kw):
