@@ -223,10 +223,3 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         result_str = str(result)
         decimal_part, fraction_part = result_str.split('.')
         self.assertEqual(len(fraction_part), 3)
-
-
-if __name__ == '__main__':
-    import sys
-
-    sys.path.insert(0, 'src/')
-    unittest.main()
