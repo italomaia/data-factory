@@ -53,13 +53,9 @@ Supported data
 Usage
 =====
 
->>> from data_factory import make_integer
->>>
+>>> from data_factory import make_integer, make_small_integer
 >>> random_integer = make_integer()  # gets you a 32bits random integer
-
-
->>>
->>> random_integer = get_integer()  # gets you a 32bits random integer
+>>> random_small_integer = make_small_integer()  # gets you a 16bits random integer
 
 About some fields
 =================
