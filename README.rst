@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/italomaia/data-factory.svg?branch=master
+  :target: https://travis-ci.org/italomaia/data-factory
+
 Data Factory
 ============
 Data factory is a simple data generator easily coupled with your web project. It's main use is to
