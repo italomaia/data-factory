@@ -20,7 +20,7 @@ class IsIntegerMixin(HasMake):
         self.assertIn(type(result), integer_types)
 
 
-class IsRealMixin(HasMake):
+class IsFloatMixin(HasMake):
     def test_makes_float(self):
         result = self.make()
         self.assertEqual(type(result), float)
@@ -167,7 +167,7 @@ class TestMakeMimeType(unittest.TestCase, HasMake):
         return self.assertEqual(type(self.make()), str)
 
 
-class TestMakeReal(unittest.TestCase, IsRealMixin):
+class TestMakeReal(unittest.TestCase, IsFloatMixin):
     def make(self):
         from data_factory import make_real
         return make_real()
@@ -179,7 +179,7 @@ class TestMakeReal(unittest.TestCase, IsRealMixin):
         self.assertLessEqual(result_len, REAL_DIGITS)
 
 
-class TestMakeDouble(unittest.TestCase, IsRealMixin):
+class TestMakeDouble(unittest.TestCase, IsFloatMixin):
     def make(self):
         from data_factory import make_double
         return make_double()
@@ -192,9 +192,37 @@ class TestMakeDouble(unittest.TestCase, IsRealMixin):
 
 
 class TestMakeDecimal(unittest.TestCase, HasMake):
-    def make(self, max_digits=None, decimal_places=None):
+    def make(self, max_digits=None, decimal=None, precision=None):
         from data_factory import make_decimal
-        return make_decimal(max_digits, decimal_places)
+        return make_decimal(max_digits, decimal, precision)
+
+    def test_makes_decimal(self):
+        from decimal import Decimal
+
+        result = self.make(12)
+        self.assertTrue(isinstance(result, Decimal))
+
+    def test_makes_decimal_with_expected_max_size(self):
+        result = abs(self.make(10))  # negative can count as a character. We don't want that here
+        result_str = str(result)
+        self.assertLessEqual(len(result_str), 10 + 1)  # accounting the dot
+
+    def test_decimal_has_two_digits_if_decimal_and_precision_length_informed(self):
+        result = abs(self.make(10, 1, 1))
+        result_str = str(result)
+        self.assertEqual(len(result_str), 2 + 1)  # accounting the dot
+
+    def test_if_decimal_length_parameter_works(self):
+        result = abs(self.make(10, 2))
+        result_str = str(result)
+        decimal_part, fraction_part = result_str.split('.')
+        self.assertEqual(len(decimal_part), 2)
+
+    def test_if_fraction_length_parameter_works(self):
+        result = abs(self.make(10, precision=3))
+        result_str = str(result)
+        decimal_part, fraction_part = result_str.split('.')
+        self.assertEqual(len(fraction_part), 3)
 
 
 if __name__ == '__main__':

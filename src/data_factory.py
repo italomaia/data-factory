@@ -35,16 +35,37 @@ error_msgs["max_length"] = "Informed max_length is too small."
 error_msgs["max_length_ext"] = "max_length is too small for given extensions"
 
 
-def __make_decimal_str(max_digits, digits=None, precision=None):
-    digits = digits or random.randint(1, max_digits)
-    precision = precision or random.randint(0, digits)
+def __make_decimal_str(max_digits, decimal_length=None, precision_length=None):
+    """
+    Makes a decimal number with up to `max_digits` digits.
 
-    assert precision < digits
-    assert digits <= max_digits
+    Arguments:
+    max_digits - max number of digits for the number
+    decimal_length - number of decimal places for the decimal part of the float
+    precision_length - number of decimal places for the precision part of the float
+    """
 
-    number = [random.choice(string.digits) for i in range(random.randint(1, digits))]
-    fraction = [random.choice(string.digits) for i in range(random.randint(0, digits - len(number)))]
-    return "%s.%s" % (''.join(number), ''.join(fraction))
+    if decimal_length is None and precision_length is None:
+        decimal_length = random.randint(1, max_digits)
+        precision_length = random.randint(0, max_digits - decimal_length)
+    elif decimal_length is None and precision_length is not None:
+        assert precision_length >= 0
+        assert precision_length < max_digits
+        decimal_length = random.randint(1, max_digits - precision_length)
+    elif precision_length is None and decimal_length is not None:
+        assert decimal_length <= max_digits
+        assert decimal_length > 0
+        precision_length = random.randint(0, max_digits - decimal_length)
+    else:  # neither is none
+        assert (decimal_length + precision_length) < max_digits
+        assert decimal_length > 0
+        assert precision_length >= 0
+        assert precision_length < max_digits
+
+    return "%s.%s" % (
+        make_char_sequence(string.digits, decimal_length),
+        make_char_sequence(string.digits, precision_length)
+    )
 
 
 def choose(choices):
@@ -154,6 +175,7 @@ def make_real(digits=None, precision=None):
     Returns a 4bytes floating point number.
 
     """
+
     return float(__make_decimal_str(REAL_DIGITS, digits, precision)) * random.choice((1, -1))
 
 
@@ -162,15 +184,17 @@ def make_double(digits=None, precision=None):
     Returns a 8bytes floating point number.
 
     """
+
     return float(__make_decimal_str(DOUBLE_DIGITS, digits, precision)) * random.choice((1, -1))
 
 
-def make_decimal(max_digits, decimal_places):
+def make_decimal(max_digits=None, decimal=None, precision=None):
     """
-    Decimal with up to ``max_digits`` digits and ``precision`` decimal places.
+    Decimal with up to `digits` digits and `precision` decimal places.
 
     """
-    return Decimal(__make_decimal_str(max_digits, max_digits, decimal_places)) * random.choice((1, -1))
+
+    return Decimal(__make_decimal_str(max_digits, decimal, precision)) * random.choice((1, -1))
 
 
 def make_char_sequence(table, length):
