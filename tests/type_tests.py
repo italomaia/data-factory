@@ -215,7 +215,12 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
     def test_if_decimal_length_parameter_works(self):
         result = abs(self.make(10, 2))
         result_str = str(result)
-        decimal_part, fraction_part = result_str.split('.')
+
+        try:
+            decimal_part, fraction_part = result_str.split('.')
+        except:  # ex: Decimal('22')
+            decimal_part = result_str
+
         self.assertEqual(len(decimal_part), 2)
 
     def test_if_fraction_length_parameter_works(self):
@@ -223,3 +228,4 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         result_str = str(result)
         decimal_part, fraction_part = result_str.split('.')
         self.assertEqual(len(fraction_part), 3)
+
