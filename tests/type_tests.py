@@ -203,9 +203,10 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         self.assertTrue(isinstance(result, Decimal))
 
     def test_makes_decimal_with_expected_max_digits(self):
-        result = abs(self.make(10))  # negative can count as a character. We don't want that here
-        result_str = str(result)
-        self.assertLessEqual(len(result_str), 10 + 1)  # accounting the dot
+        max_digits = 10
+
+        result = abs(self.make(max_digits))  # negative can count as a character. We don't want that here
+        self.assertLessEqual(len(str(result)), max_digits + 1)  # accounting the dot
 
     def test_decimal_has_two_digits_if_decimal_and_precision_length_informed(self):
         result = abs(self.make(10, 1, 1))
@@ -213,19 +214,22 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         self.assertEqual(len(result_str), 2 + 1)  # accounting the dot
 
     def test_if_decimal_length_parameter_works(self):
-        result = abs(self.make(10, 2))
-        result_str = str(result)
+        max_digits = 10
+        decimal_length = 2
 
-        try:
-            decimal_part, fraction_part = result_str.split('.')
-        except:  # ex: Decimal('22')
-            decimal_part = result_str
+        result = abs(self.make(max_digits, decimal_length))
+        split = str(result).split('.')
 
-        self.assertEqual(len(decimal_part), 2)
+        # ex: '10.0' => Decimal('10.0')
+        # ex: '01.005' => Decimal('1.005')
+        self.assertLessEqual(len(split[0]), decimal_length)
 
     def test_if_fraction_length_parameter_works(self):
-        result = abs(self.make(10, precision=3))
-        result_str = str(result)
-        decimal_part, fraction_part = result_str.split('.')
-        self.assertEqual(len(fraction_part), 3)
+        max_digits = 10
+        precision = 3
 
+        result = abs(self.make(max_digits, None, precision))
+        split = str(result).split('.')
+
+        # ex: '5.0020' => Decimal('5.020')
+        self.assertEqual(len(split[1]), precision)
