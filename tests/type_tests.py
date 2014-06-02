@@ -202,7 +202,7 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         result = self.make(12)
         self.assertTrue(isinstance(result, Decimal))
 
-    def test_makes_decimal_with_expected_max_size(self):
+    def test_makes_decimal_with_expected_max_digits(self):
         result = abs(self.make(10))  # negative can count as a character. We don't want that here
         result_str = str(result)
         self.assertLessEqual(len(result_str), 10 + 1)  # accounting the dot
