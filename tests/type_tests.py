@@ -233,3 +233,26 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
 
         # ex: '5.0020' => Decimal('5.020')
         self.assertEqual(len(split[1]), precision)
+
+class TesteMakeBoolean(unittest.TestCase, HasMake):
+    def make(self):
+        from data_factory import make_boolean
+
+        return make_boolean()
+
+    def test_makes_boolean(self):
+        result = self.make()
+        self.assertTrue(isinstance(result, bool))
+
+    def test_makes_true_or_false(self):
+        values = [True, False]
+
+        for i in range(10):
+            result = self.make()
+            if result in values:
+                values.remove(result)
+
+                if len(values) == 0:
+                    break
+        # may give false positive in rare occasions
+        self.assertEqual(len(values), 0)
