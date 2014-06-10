@@ -251,7 +251,7 @@ def make_string(max_length, empty=False):
     @return:
     """
     return make_char_sequence(string.printable,
-        random.randint(empty and 1 or 0, max_length))
+        random.randint(int(not empty), max_length))
 
 
 def make_unicode(max_length, empty=False):
@@ -280,7 +280,7 @@ def make_unicode(max_length, empty=False):
     """
     return ''.join(
         [unichr(random.randint(0, sys.maxunicode))
-        for i in range(random.randint(empty and 1 or 0, max_length))])
+        for i in range(random.randint(int(not empty), max_length))])
 
 
 def make_slug(max_length, empty=False):
@@ -292,7 +292,7 @@ def make_slug(max_length, empty=False):
     @return:
     """
     return make_char_sequence(string.letters + string.digits + '-_',
-        random.randint(empty and 1 or 0, max_length))
+        random.randint(int(not empty), max_length))
 
 
 # TODO implement
