@@ -283,17 +283,13 @@ class TestMakeBoolean(unittest.TestCase, HasMake):
         self.assertEqual(len(values), 0)
 
 
-class TestMakeCharSequence(unittest.TestCase, HasMake):
+class TestMakeCharSequence(unittest.TestCase, IsStringMixin):
     def make(self, table='abc123', length=12):
         from data_factory import make_char_sequence
         self.table = table
         return make_char_sequence(table, length)
 
-    def test_makes_char_sequence(self):
-        result = self.make()
-        self.assertTrue(isinstance(result, basestring))
-
-    def test_makes_char_sequence_from_table(self):
+    def test_makes_char_sequence_from_given_table(self):
         result = self.make()
 
         for c in result:
