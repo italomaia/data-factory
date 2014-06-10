@@ -27,6 +27,7 @@ DOUBLE_DIGITS = 53
 
 # complete character ascii table
 ASCII_TABLE = ''.join([chr(i) for i in range(255)])
+SLUG_TABLE = string.letters + string.digits + '-_'
 BINARY_TABLE = '01'
 
 
@@ -277,8 +278,7 @@ def make_slug(max_length, empty=False):
     @param empty: allow empty slugs?
     @return:
     """
-    return make_char_sequence(string.letters + string.digits + '-_',
-        random.randint(int(not empty), max_length))
+    return make_char_sequence(SLUG_TABLE, random.randint(int(not empty), max_length))
 
 
 # TODO implement

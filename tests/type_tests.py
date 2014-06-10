@@ -319,3 +319,16 @@ class TestMakeUnicode(unittest.TestCase, HasDefaultStringInterfaceMixin):
         result = self.make()
         for c in result:
             self.assertTrue(0 <= ord(c) <= sys.maxunicode)
+
+
+class TestMakeSlug(unittest.TestCase, HasDefaultStringInterfaceMixin):
+    def make(self, max_length=12, empty=False):
+        from data_factory import make_slug
+        return make_slug(max_length, empty)
+
+    def test_makes_slug_string(self):
+        from data_factory import SLUG_TABLE
+        result = self.make()
+
+        for c in result:
+            self.assertTrue(c in SLUG_TABLE)
