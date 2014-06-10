@@ -332,3 +332,51 @@ class TestMakeSlug(unittest.TestCase, HasDefaultStringInterfaceMixin):
 
         for c in result:
             self.assertTrue(c in SLUG_TABLE)
+
+
+class TestMakeDatetime(unittest.TestCase):
+    def make(self, from_date=None, to_date=None):
+        from data_factory import make_datetime
+        return make_datetime(from_date, to_date)
+
+    def test_makes_datetime(self):
+        from datetime import datetime
+        result = self.make()
+        self.assertTrue(isinstance(result, datetime))
+
+    def test_default_datetime_is_now(self):
+        from datetime import datetime
+
+        result = self.make()  # now
+        now = datetime.now()
+        self.assertEqual(result.year, now.year)
+        self.assertEqual(result.month, now.month)
+        self.assertEqual(result.day, now.day)
+
+        self.assertEqual(result.hour, now.hour)
+        self.assertEqual(result.minute, now.minute)
+
+        try:
+            # there may be a false positive here in some cases. Unlikely though.
+            self.assertEqual(result.second, now.second)
+        except Exception, e:
+            print 'Maybe a false positive... Run it again!'
+            raise e
+
+    def test_past_datetime_works(self):
+        from datetime import datetime, timedelta
+
+        now = datetime.now()
+        last_week = now - timedelta(weeks=1)
+
+        result = self.make(from_date=last_week)
+        self.assertGreaterEqual(now, result)
+
+    def test_future_datetime_works(self):
+        from datetime import datetime, timedelta
+
+        now = datetime.now()
+        next_week = now + timedelta(weeks=1)
+
+        result = self.make(to_date=next_week)
+        self.assertLessEqual(now, result)

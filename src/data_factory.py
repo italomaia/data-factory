@@ -298,34 +298,6 @@ def make_datetime(from_date=None, to_date=None):
     """
     Creates a datetime in the past or in the future.
 
-    Example:
-
-    >>> # test for date in the present
-    >>> date_in_present = make_datetime()
-    >>> assert isinstance(date_in_present, datetime)
-    >>>
-    >>> # test for date in past
-    >>> target_date = datetime(year=2005, month=4, day=13)
-    >>> date_in_past = make_datetime(target_date)
-    >>> assert isinstance(date_in_past, datetime)
-    >>> assert target_date <= date_in_past
-    >>> assert date_in_past <= datetime.now()
-    >>>
-    >>> # test for date in the future
-    >>> target_date = datetime.now() + timedelta(days=100)
-    >>> date_in_future = make_datetime(to_date=target_date)
-    >>> assert isinstance(date_in_future, datetime)
-    >>> assert target_date >= date_in_future
-    >>> assert date_in_future >= datetime.now()
-    >>>
-    >>> # test for date in past or future
-    >>> pdate = datetime.now() - timedelta(days=100)
-    >>> fdate = datetime.now() + timedelta(days=100)
-    >>> rdate = make_datetime(pdate, fdate)
-    >>> assert isinstance(rdate, datetime)
-    >>> assert pdate <= rdate
-    >>> assert fdate >= rdate
-
     @param from_date: limit date in the past random datetime will be generated.
     @param to_date: limit date in the future  random datetime will be
     generated. If not informed, generated datetime will be in the past.
@@ -333,8 +305,8 @@ def make_datetime(from_date=None, to_date=None):
     """
     now = datetime.now()
 
-    to_date = to_date or now
     from_date = from_date or now
+    to_date = to_date or now
 
     past_delta = now - from_date  # timedelta
     future_delta = to_date - now  # timedelta
