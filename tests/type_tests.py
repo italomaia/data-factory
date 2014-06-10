@@ -26,6 +26,31 @@ class IsFloatMixin(HasMake):
         self.assertEqual(type(result), float)
 
 
+class IsStringMixin(HasMake):
+    def test_makes_string(self):
+        result = self.make()
+        self.assertTrue(isinstance(result, basestring))
+
+
+class HasDefaultStringInterfaceMixin(IsStringMixin):
+    def test_makes_non_empty_string_by_default(self):
+        result = self.make()
+        self.assertTrue(len(result) > 0)
+
+    def test_makes_empty_returns_empty_or_non_empty_string(self):
+        flag = 0
+        for i in range(10):
+            result = self.make(1, True)  # allow empty result
+
+            if len(result) == 0:
+                flag |= 1
+            elif len(result) > 0:
+                flag |= 2
+            elif flag == 3:
+                break
+        self.assertEqual(flag, 3)  # may assert false positive
+
+
 class IntegerIsInBoundsMixin(IsIntegerMixin):
     def make(self):
         raise NotImplemented()
@@ -256,3 +281,33 @@ class TestMakeBoolean(unittest.TestCase, HasMake):
                     break
         # may give false positive in rare occasions
         self.assertEqual(len(values), 0)
+
+
+class TestMakeCharSequence(unittest.TestCase, HasMake):
+    def make(self, table='abc123', length=12):
+        from data_factory import make_char_sequence
+        self.table = table
+        return make_char_sequence(table, length)
+
+    def test_makes_char_sequence(self):
+        result = self.make()
+        self.assertTrue(isinstance(result, basestring))
+
+    def test_makes_char_sequence_from_table(self):
+        result = self.make()
+
+        for c in result:
+            self.assertTrue(c in self.table)
+
+
+class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
+    def make(self, max_length=12, empty=False):
+        from data_factory import make_ascii_string
+        return make_ascii_string(max_length, empty)
+
+    def test_makes_ascii_string(self):
+        from data_factory import ASCII_TABLE
+
+        result = self.make()
+        for c in result:
+            self.assertTrue(c in ASCII_TABLE)

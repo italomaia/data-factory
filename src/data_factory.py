@@ -230,7 +230,7 @@ def make_ascii_string(max_length, empty=False):
     @return:
     """
     return make_char_sequence(ASCII_TABLE,
-        random.randint(empty and 1 or 0, max_length))
+        random.randint(int(not empty), max_length))
 
 
 def make_string(max_length, empty=False):
