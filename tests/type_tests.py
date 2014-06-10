@@ -307,3 +307,15 @@ class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
         result = self.make()
         for c in result:
             self.assertTrue(c in ASCII_TABLE)
+
+class TestMakeUnicode(unittest.TestCase, HasDefaultStringInterfaceMixin):
+    def make(self, max_length=12, empty=False):
+        from data_factory import make_unicode
+        return make_unicode(max_length, empty)
+
+    def test_makes_unicode_string(self):
+        import sys
+
+        result = self.make()
+        for c in result:
+            self.assertTrue(0 <= ord(c) <= sys.maxunicode)

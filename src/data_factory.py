@@ -259,20 +259,6 @@ def make_unicode(max_length, empty=False):
     Gets you a unicode string. Character range depends in the UCS your python
     was configured with (UCS2/UCS4).
 
-    Example:
-
-    >>> unicode_string = make_unicode(20)
-    >>> assert isinstance(unicode_string, basestring)
-    >>> assert isinstance(unicode_string, unicode)
-    >>> assert 1 <= len(unicode_string)
-    >>> assert len(unicode_string) <= 20
-    >>>
-    >>> unicode_string = make_unicode(20, True)
-    >>> assert isinstance(unicode_string, basestring)
-    >>> assert isinstance(unicode_string, unicode)
-    >>> assert 0 <= len(unicode_string)
-    >>> assert len(unicode_string) <= 20
-
     @see: http://pyref.infogami.com/unichr
     @param max_length:
     @param empty:
