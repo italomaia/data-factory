@@ -359,9 +359,10 @@ class TestMakeDatetime(unittest.TestCase):
         try:
             # there may be a false positive here in some cases. Unlikely though.
             self.assertEqual(result.second, now.second)
-        except Exception, e:
+        except Exception:
             print 'Maybe a false positive... Run it again!'
-            raise e
+            import sys
+            raise sys.exc_info()[1]
 
     def test_past_datetime_works(self):
         from datetime import datetime, timedelta
