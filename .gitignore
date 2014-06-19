@@ -1,4 +1,6 @@
 *~
 *.pyc
-.idea/*
+src/data_factory.egg-info/
+.idea/
+.tox/
 .coverage
