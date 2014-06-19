@@ -1,6 +1,9 @@
 .. image:: https://travis-ci.org/italomaia/data-factory.svg?branch=master
   :target: https://travis-ci.org/italomaia/data-factory
 
+.. image:: https://coveralls.io/repos/italomaia/flask-empty/badge.png
+  :target: https://coveralls.io/r/italomaia/flask-empty
+
 Data Factory
 ============
 Data factory is a simple data generator easily coupled with your web project. It's main use is to
