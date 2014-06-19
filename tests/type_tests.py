@@ -1,7 +1,11 @@
 # coding:utf-8
 
 import sys
-import unittest
+
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 integer_types = (int,)
 
@@ -259,6 +263,7 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
         # ex: '5.0020' => Decimal('5.020')
         self.assertEqual(len(split[1]), precision)
 
+
 class TestMakeBoolean(unittest.TestCase, HasMake):
     def make(self):
         from data_factory import make_boolean
@@ -307,6 +312,7 @@ class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
         result = self.make()
         for c in result:
             self.assertTrue(c in ASCII_TABLE)
+
 
 class TestMakeUnicode(unittest.TestCase, HasDefaultStringInterfaceMixin):
     def make(self, max_length=12, empty=False):
@@ -360,8 +366,9 @@ class TestMakeDatetime(unittest.TestCase):
             # there may be a false positive here in some cases. Unlikely though.
             self.assertEqual(result.second, now.second)
         except Exception:
-            print 'Maybe a false positive... Run it again!'
             import sys
+            import logging
+            logging.getLogger('TestMakeDatetime.test_default_datetime_is_now').info('Maybe a false positive... Run it again!')
             raise sys.exc_info()[1]
 
     def test_past_datetime_works(self):
