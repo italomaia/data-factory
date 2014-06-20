@@ -5,8 +5,10 @@ import unittest
 
 integer_types = (int,)
 
-if sys.version < '3':
+if sys.version_info < (3, 0):
     integer_types += (long,)
+else:
+    basestring = unicode = str
 
 
 class HasMake(object):

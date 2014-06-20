@@ -27,7 +27,7 @@ DOUBLE_DIGITS = 53
 
 # complete character ascii table
 ASCII_TABLE = ''.join([chr(i) for i in range(255)])
-SLUG_TABLE = string.letters + string.digits + '-_'
+SLUG_TABLE = string.ascii_letters + string.digits + '-_'
 BINARY_TABLE = '01'
 
 
