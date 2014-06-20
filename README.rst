@@ -1,8 +1,8 @@
 .. image:: https://travis-ci.org/italomaia/data-factory.svg?branch=master
   :target: https://travis-ci.org/italomaia/data-factory
 
-.. image:: https://coveralls.io/repos/italomaia/flask-empty/badge.png
-  :target: https://coveralls.io/r/italomaia/flask-empty
+.. image:: https://coveralls.io/repos/italomaia/data-factory/badge.png
+  :target: https://coveralls.io/r/italomaia/data-factory
 
 Data Factory
 ============
