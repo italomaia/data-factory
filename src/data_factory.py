@@ -331,17 +331,8 @@ def make_hostname_label(length):
     A hostname is formed by a series of labels joined with dots. This
     method should be used for that purpose.
 
-    Example:
-
-    >>> hostname_label = make_hostname_label(20)
-    >>> assert isinstance(hostname_label, basestring)
-    >>> assert len(hostname_label) == 20
-    >>>
-    >>> hostname_label = make_hostname_label(30)
-    >>> assert isinstance(hostname_label, basestring)
-    >>> assert len(hostname_label) == 30
-
-    @param length: length of the generated hostname.
+    @see http://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
+    @param length: length of the generated hostname
     @return:
     """
     assert 0 < length < 64
@@ -368,7 +359,11 @@ def make_hostname(max_length, extensions=[".com", ".org", ".net"]):
     @param extensions: iterable with possible extensions for hostname.
     @return: proper normalized hostname string.
     """
+
+    # verifies if max_length is in length range
     assert 0 < max_length < 256  # up to 255
+
+    # complains if any len(ext) is less than max_length
     assert reduce(max, map(len, extensions)) < max_length, \
         error_msgs["max_length_ext"]
 
