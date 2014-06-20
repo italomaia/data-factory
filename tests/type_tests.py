@@ -454,13 +454,12 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
         self.assertIn(ext, (".com", ".org", ".net"))
 
     def test_provided_extension_is_used(self):
-        from os import path
         from random import choice
 
         extensions = ['.com.br', '.cc', '.io']
-        result = self.make(extensions=[choice(extensions)])
-        name, ext = path.splitext(result)
-        self.assertIn(ext, extensions)
+        ext = choice(extensions)
+        result = self.make(extensions=[ext])
+        self.assertTrue(result.endswith(ext))
 
     def test_hostname_complains_if_length_is_too_small(self):
         self.assertRaises(AssertionError, lambda: self.make(max_length=2, extensions=['.com.br']))
