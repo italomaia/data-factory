@@ -429,6 +429,8 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
         for c in label:
             self.assertIn(c, charset)
 
+        return True
+
     def test_is_formed_of_valid_labels(self):
         result = self.make()
 
@@ -448,7 +450,8 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
     def test_default_extensions_composition(self):
         from os import path
         result = self.make()
-        self.assertIn(path.splitext(result), (".com", ".org", ".net"))
+        name, ext = path.splitext(result)
+        self.assertIn(ext, (".com", ".org", ".net"))
 
     def test_provided_extension_is_used(self):
         from os import path
@@ -456,7 +459,8 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
 
         extensions = ['.com.br', '.cc', '.io']
         result = self.make(extensions=[choice(extensions)])
-        self.assertIn(path.splitext(result), extensions)
+        name, ext = path.splitext(result)
+        self.assertIn(ext, extensions)
 
     def test_hostname_complains_if_length_is_too_small(self):
         self.assertRaises(AssertionError, lambda: self.make(max_length=2, extensions=['.com.br']))
