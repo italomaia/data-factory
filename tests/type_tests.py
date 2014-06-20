@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import sys
+import string
 import unittest
 
 integer_types = (int,)
@@ -386,3 +387,101 @@ class TestMakeDatetime(unittest.TestCase):
 
         result = self.make(to_date=next_week)
         self.assertLessEqual(now, result)
+
+
+class TestMakeHostnameLabel(unittest.TestCase, IsStringMixin):
+    def make(self, length=12):
+        from data_factory import make_hostname_label
+        return make_hostname_label(length)
+
+    def test_makes_label_with_requested_length(self):
+        from random import randint
+        length = randint(1, 63)
+        result = self.make(length)
+        self.assertEqual(len(result), length)
+
+    def test_label_length_restriction(self):
+        # between 1 and 63 characters
+        self.assertRaises(AssertionError, lambda: self.make(0))
+        self.assertRaises(AssertionError, lambda: self.make(64))
+
+    def test_label_has_proper_charset(self):
+        result = self.make()
+        charset = string.ascii_letters + string.digits + '-'
+
+        for c in result:
+            self.assertIn(c, charset)
+
+
+class TestMakeHostname(unittest.TestCase, IsStringMixin):
+    def make(self, **kwargs):
+        from data_factory import make_hostname
+
+        kwargs['max_length'] = kwargs.get('max_length', 12)
+        return make_hostname(**kwargs)
+
+    def is_hostname(self, label):
+        charset = string.ascii_letters + string.digits + '-'
+
+        self.assertGreaterEqual(len(label), 1)
+        self.assertLessEqual(len(label), 63)
+
+        for c in label:
+            self.assertIn(c, charset)
+
+    def test_is_formed_of_valid_labels(self):
+        result = self.make()
+
+        for label in result.split('.'):
+            self.assertTrue(self.is_hostname(label))
+
+    def test_hostname_labels_length_are_valid(self):
+        result = self.make()
+
+        for label in result.split('.'):
+            self.assertGreater(len(label), 0)
+
+    def test_hostname_has_enough_labels(self):
+        result = self.make()
+        self.assertGreater(len(result.split('.')), 1)
+
+    def test_default_extensions_composition(self):
+        from os import path
+        result = self.make()
+        self.assertIn(path.splitext(result), (".com", ".org", ".net"))
+
+    def test_provided_extension_is_used(self):
+        from os import path
+        from random import choice
+
+        extensions = ['.com.br', '.cc', '.io']
+        result = self.make(extensions=[choice(extensions)])
+        self.assertIn(path.splitext(result), extensions)
+
+    def test_hostname_complains_if_length_is_too_small(self):
+        self.assertRaises(AssertionError, lambda: self.make(max_length=2, extensions=['.com.br']))
+
+
+
+class TestMakeEmailLocalPart(unittest.TestCase):
+    pass
+
+
+class TestMakeEmail(unittest.TestCase):
+    pass
+
+
+class TestMakeUrl(unittest.TestCase):
+    pass
+
+
+class TestMakeIP(unittest.TestCase):
+    pass
+
+
+class TestMakeMimeType(unittest.TestCase):
+    pass
+
+
+class TestMakeFilename(unittest.TestCase):
+    pass
