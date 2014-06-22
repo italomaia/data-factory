@@ -54,6 +54,19 @@ class HasDefaultStringInterfaceMixin(IsStringMixin):
         self.assertEqual(flag, 3)  # may assert false positive
 
 
+class HasHostnameLabelMixin(IsStringMixin):
+    def is_hostname_label(self, label):
+        charset = string.ascii_letters + string.digits + '-'
+
+        self.assertGreaterEqual(len(label), 1)
+        self.assertLessEqual(len(label), 63)
+
+        for c in label:
+            self.assertIn(c, charset)
+
+        return True
+
+
 class IntegerIsInBoundsMixin(IsIntegerMixin):
     def make(self):
         raise NotImplemented()
@@ -413,18 +426,7 @@ class TestMakeHostnameLabel(unittest.TestCase, IsStringMixin):
             self.assertIn(c, charset)
 
 
-class TestMakeHostname(unittest.TestCase, IsStringMixin):
-    def is_hostname_label(self, label):
-        charset = string.ascii_letters + string.digits + '-'
-
-        self.assertGreaterEqual(len(label), 1)
-        self.assertLessEqual(len(label), 63)
-
-        for c in label:
-            self.assertIn(c, charset)
-
-        return True
-
+class TestMakeHostname(unittest.TestCase, HasHostnameLabelMixin):
     def make(self, **kwargs):
         from data_factory import make_hostname
 
@@ -549,11 +551,37 @@ class TestMakeEmail(unittest.TestCase, IsStringMixin):
             self.assertTrue(self.is_hostname_label(label))
 
 
-class TestMakeUrl(unittest.TestCase, IsStringMixin):
+class TestMakeUrl(unittest.TestCase, HasHostnameLabelMixin):
     def make(self, **kwargs):
         from data_factory import make_url
-        kwargs['max_length'] = kwargs.get('max_length', 12)
+        kwargs['max_length'] = kwargs.get('max_length', 20)
         return make_url(**kwargs)
+
+    def test_safe_param_produces_https_url(self):
+        result = self.make(safe=True)
+        self.assertTrue(result.startswith('https:'))
+
+    def test_default_safe_param_produces_http_url(self):
+        result = self.make(safe=False)
+        self.assertTrue(result.startswith('http:'))
+
+    def test_min_max_length_is_possible(self):
+        result = self.make(max_length=10, extensions=['.c'])
+        self.assertEqual(len(result), 10)
+
+    def test_provided_extension_is_used(self):
+        from random import choice
+        char = choice(string.ascii_lowercase)
+        result = self.make(max_length=10, extensions=['.%s' % char])
+        self.assertTrue(result.endswith('.%s' % char))
+
+    def test_hostname_part_is_actually_a_hostname(self):
+        result = self.make()
+        protocol, hostname = result.split('://')
+        labels = hostname.split('.')
+
+        for label in labels:
+            self.assertTrue(self.is_hostname_label(label))
 
 
 class TestMakeIP(unittest.TestCase):
