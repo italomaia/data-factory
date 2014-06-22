@@ -554,6 +554,42 @@ class TestMakeUrl(unittest.TestCase):
 
 
 class TestMakeIP(unittest.TestCase):
+    def make(self, v=4):
+        from data_factory import make_ip_address
+        return make_ip_address(v=v)
+
+    def test_makes_v4_ip(self):
+        result = self.make()
+        self.assertEqual(len(result), 4)
+
+        for bit in result:
+            self.assertTrue(0 <= bit <= 255)
+
+    def test_makes_valid_v4(self):
+        result = self.make()
+
+        # [0] 10.x.x.x
+        self.assertNotEqual(result[0], 10)
+
+        # [1] 192.168.x.x
+        self.assertFalse(result[0] == 192 and result[1] == 168)
+
+        # [2] 172.16.0.0 to 172.31.255.255
+        self.assertTrue(result < [172, 16, 0, 0] or result > [172, 31, 255, 255])
+
+    def test_makes_v6_ip(self):
+        result = self.make(6)
+
+        for bit in result:
+            try:
+                int(bit, 16)
+            except ValueError:
+                assert False, 'Non hex in ipv6'
+
+        self.assertEqual(len(result), 8)
+
+
+class TestMakeStrIP(unittest.TestCase):
     pass
 
 

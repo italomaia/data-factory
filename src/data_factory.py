@@ -444,7 +444,7 @@ def make_ip_address_str(*args, **kw):
     if kw['v'] == 4:
         return '.'.join(map(str, ip_address))
     elif kw['v'] == 6:
-        return ':'.join(map(lambda n: hex(n)[2:], ip_address))
+        return ':'.join(map(lambda v: v[2:], ip_address))
 
 
 def make_ip_address(valid=True, v=4):
@@ -476,7 +476,7 @@ def make_ip_address(valid=True, v=4):
             return ad
 
     elif v == 6:
-        return [random.randint(0, 65535) for i in range(8)]
+        return [hex(random.randint(0, 65535)) for i in range(8)]
 
 
 def make_mime_type():
