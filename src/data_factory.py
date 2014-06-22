@@ -32,7 +32,7 @@ BINARY_TABLE = '01'
 
 
 error_msgs = {}
-error_msgs["max_length"] = "Informed max_length is too small."
+error_msgs["max_length"] = "Informed max_length %d is too small."
 error_msgs["max_length_ext"] = "max_length is too small for given extensions"
 
 
@@ -413,7 +413,7 @@ def make_email(local_length, domain_length):
     return local_part + '@' + domain_part
 
 
-def make_url(max_length, safe=False, port_number=""):
+def make_url(max_length, safe=False, port_number=None, extensions=['.com']):
     """
 
     @param max_length:
@@ -421,15 +421,16 @@ def make_url(max_length, safe=False, port_number=""):
     @param port_number:
     @return:
     """
-    assert max_length > 10, error_msgs["max_length"]
+    protocol = 'https://' if safe else 'http://'
+    port_str = '' if port_number is None else ":" + str(port_number)
+    extension_max_length = reduce(max, map(len, extensions))
 
-    if port_number:
-        port_number = ":" + str(port_number)
+    min_length = len(protocol + port_str) + 1 + extension_max_length
 
-    scheme_name = safe and "https" or "http"
-    protocol = scheme_name + "://"
-    hostname_max_length = max_length - len(protocol) - len(port_number)
-    return protocol + make_hostname(hostname_max_length) + port_number
+    assert max_length >= min_length, error_msgs["max_length"] % min_length
+
+    hostname_max_length = max_length - len(protocol) - len(port_str)
+    return protocol + make_hostname(hostname_max_length, extensions=extensions) + port_str
 
 
 def make_ip_address_str(*args, **kw):
