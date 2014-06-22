@@ -607,8 +607,15 @@ class TestMakeIPStr(unittest.TestCase):
         self.assertIsNotNone(c.match(result))
 
 
-class TestMakeMimeType(unittest.TestCase):
-    pass
+class TestMakeMimeType(unittest.TestCase, IsStringMixin):
+    def make(self):
+        from data_factory import make_mime_type
+        return make_mime_type()
+
+    def test_if_is_valid_mimetype(self):
+        import mimetypes
+        result = self.make()
+        self.assertIn(result, mimetypes.types_map.values())
 
 
 class TestMakeFilename(unittest.TestCase):
