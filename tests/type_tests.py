@@ -414,13 +414,7 @@ class TestMakeHostnameLabel(unittest.TestCase, IsStringMixin):
 
 
 class TestMakeHostname(unittest.TestCase, IsStringMixin):
-    def make(self, **kwargs):
-        from data_factory import make_hostname
-
-        kwargs['max_length'] = kwargs.get('max_length', 12)
-        return make_hostname(**kwargs)
-
-    def is_hostname(self, label):
+    def is_hostname_label(self, label):
         charset = string.ascii_letters + string.digits + '-'
 
         self.assertGreaterEqual(len(label), 1)
@@ -431,11 +425,17 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
 
         return True
 
+    def make(self, **kwargs):
+        from data_factory import make_hostname
+
+        kwargs['max_length'] = kwargs.get('max_length', 12)
+        return make_hostname(**kwargs)
+
     def test_is_formed_of_valid_labels(self):
         result = self.make()
 
         for label in result.split('.'):
-            self.assertTrue(self.is_hostname(label))
+            self.assertTrue(self.is_hostname_label(label))
 
     def test_hostname_labels_length_are_valid(self):
         result = self.make()
@@ -503,8 +503,50 @@ class TestMakeEmailLocalPart(unittest.TestCase, IsStringMixin):
                 flag = True
 
 
-class TestMakeEmail(unittest.TestCase):
-    pass
+class TestMakeEmail(unittest.TestCase, IsStringMixin):
+    def is_local_part(self, text):
+        charset = string.ascii_letters + string.digits + "!#$%&'*+-/=?^_`{|}~."
+
+        self.assertTrue(0 < len(text) < 65)
+
+        for c in text:
+            self.assertTrue(c in charset)
+
+        return True
+
+    def is_hostname_label(self, label):
+        charset = string.ascii_letters + string.digits + '-'
+
+        self.assertGreaterEqual(len(label), 1)
+        self.assertLessEqual(len(label), 63)
+
+        for c in label:
+            self.assertIn(c, charset)
+
+        return True
+
+    def make(self, local_length=6, domain_length=8):
+        from data_factory import make_email
+        return make_email(local_length, domain_length)
+
+    def test_if_looks_like_an_email(self):
+        result = self.make()
+        self.assertIn('@', result)
+        self.assertEqual(len(result.split('@')), 2)
+
+    def test_if_local_part_is_valid(self):
+        result = self.make()
+        local_part = result.split('@')[0]
+        self.assertTrue(self.is_local_part(local_part))
+
+    def test_if_domain_part_is_valid(self):
+        result = self.make()
+        domain_part = result.split('@')[1]
+        split = domain_part.split('.')
+
+        self.assertGreater(len(split), 0)
+        for label in split:
+            self.assertTrue(self.is_hostname_label(label))
 
 
 class TestMakeUrl(unittest.TestCase):
