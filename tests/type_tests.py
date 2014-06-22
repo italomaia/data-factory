@@ -589,8 +589,22 @@ class TestMakeIP(unittest.TestCase):
         self.assertEqual(len(result), 8)
 
 
-class TestMakeStrIP(unittest.TestCase):
-    pass
+class TestMakeIPStr(unittest.TestCase):
+    def make(self, v=4):
+        from data_factory import make_ip_address_str
+        return make_ip_address_str(v=v)
+
+    def test_makes_valid_ipv4_formatted_string(self):
+        import re
+        result = self.make()
+        c = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+        self.assertIsNotNone(c.match(result))
+
+    def test_makes_valid_ipv6_formatted_string(self):
+        import re
+        result = self.make(v=6)
+        c = re.compile(r'[\da-f]{0,4}(:[\da-f]{0,4}){7}')
+        self.assertIsNotNone(c.match(result))
 
 
 class TestMakeMimeType(unittest.TestCase):
