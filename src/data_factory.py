@@ -350,24 +350,24 @@ def make_hostname_label(length):
     return local_str
 
 
-def make_hostname(max_length, extensions=[".com", ".org", ".net"]):
+def make_hostname(max_length, domains=[".com", ".org", ".net"]):
     """
     Creates an hostname with length up to max_length using one of the
     informed extensions.
 
-    @param max_length: max length for randomly generated hostname.
-    @param extensions: iterable with possible extensions for hostname.
-    @return: proper normalized hostname string.
+    Keyword Arguments:
+        max_length  -- max length for randomly generated hostname.
+        domains     -- iterable with possible extensions for hostname
     """
 
     # verifies if max_length is in length range
     assert 0 < max_length < 256  # up to 255
 
     # complains if any len(ext) is less than max_length
-    assert reduce(max, map(len, extensions)) < max_length, \
+    assert reduce(max, map(len, domains)) < max_length, \
         error_msgs["max_length_ext"]
 
-    extension = random.choice(extensions)
+    extension = random.choice(domains)
 
     max_length -= len(extension)
     label = make_hostname_label(random.randint(1, min(63, max_length)))
@@ -379,7 +379,8 @@ def make_email_local_part(length):
     """
     Creates an email local part.
 
-    @see http://en.wikipedia.org/wiki/Email_address#Syntax
+    See http://en.wikipedia.org/wiki/Email_address#Syntax
+
     """
     assert length > 0
     assert length < 65
@@ -402,7 +403,7 @@ def make_email(local_length, domain_length):
     Creates an valid email address.
     domain as ip address and local part between double quotes are ignored
 
-    @see http://en.wikipedia.org/wiki/Email_address#Syntax
+    See http://en.wikipedia.org/wiki/Email_address#Syntax
     """
 
     assert 0 < local_length <= 64
@@ -413,32 +414,36 @@ def make_email(local_length, domain_length):
     return local_part + '@' + domain_part
 
 
-def make_url(max_length, safe=False, port_number=None, extensions=['.com']):
+def make_url(max_length, safe=False, port_number=None, domains=['.com']):
     """
+    Positional Arguments:
+        max_length  -- max length of new url
 
-    @param max_length:
-    @param safe:
-    @param port_number:
-    @return:
+    Keyword Arguments:
+        safe        -- force https?
+        port_number -- use port number?
+        domains     -- list of acceptable domains
     """
     protocol = 'https://' if safe else 'http://'
     port_str = '' if port_number is None else ":" + str(port_number)
-    extension_max_length = reduce(max, map(len, extensions))
+    extension_max_length = reduce(max, map(len, domains))
 
     min_length = len(protocol + port_str) + 1 + extension_max_length
 
     assert max_length >= min_length, error_msgs["max_length"] % min_length
 
     hostname_max_length = max_length - len(protocol) - len(port_str)
-    return protocol + make_hostname(hostname_max_length, extensions=extensions) + port_str
+    return protocol + make_hostname(hostname_max_length, domains=domains) + port_str
 
 
 def make_ip_address_str(*args, **kw):
     """
     Helper function that returns the ip_address in string format.
-    Accept same parameters as get_ip_address.
+    Accepts same parameters as make_ip_address.
 
-    @return: string ip address
+    Keyword Arguments:
+        valid -- forces ip address to be valid
+        v -- ip address version 4|6
     """
     ip_address = make_ip_address(*args, **kw)
 
@@ -450,7 +455,7 @@ def make_ip_address_str(*args, **kw):
 
 def make_ip_address(valid=True, v=4):
     """
-    Returns a IPV4/6 address
+    Returns a IP address
 
     Invalid addresses for IPV4:
      - [0] 10.x.x.x
@@ -458,8 +463,8 @@ def make_ip_address(valid=True, v=4):
      - [2] 172.16.0.0 to 172.31.255.255
 
     Keyword Arguments:
-    valid -- forces created ip address to be valid
-    v -- ip address version
+        valid   -- forces ip address to be valid
+        v       -- ip address version 4|6
 
     """
 
@@ -491,29 +496,14 @@ def make_mime_type():
 
 def make_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
     """
+    Returns a valid filename with one of the given extensions
 
-    Example:
+    Positional Arguments:
+        max_length  -- max length for the new filename
 
-    >>> import tempfile
-    >>> import os
-    >>> from os import path
-    >>>
-    >>> new_filename = make_filename(50)
-    >>> assert isinstance(new_filename, basestring)
-    >>> name, ext = path.splitext(new_filename)
-    >>> assert ext in (".txt", ".odt", ".pdf")
-    >>>
-    >>> tempfolder = tempfile.mkdtemp()
-    >>> abs_filename = path.join(tempfolder, new_filename)
-    >>> file = open(abs_filename, 'w')
-    >>> file.close()
-    >>> assert path.exists(abs_filename)
-    >>>
+    Keyword Arguments:
+        extensions  -- list of possible filename extensions
 
-
-    @param max_length: max length for the randomly generated filename.
-    @param extensions:
-    @return: filename string using one of the informed extensions.
     """
     assert reduce(max, map(len, extensions)) < max_length, \
         error_msgs["max_length_ext"]

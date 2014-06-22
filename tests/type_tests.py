@@ -449,22 +449,22 @@ class TestMakeHostname(unittest.TestCase, HasHostnameLabelMixin):
         result = self.make()
         self.assertGreater(len(result.split('.')), 1)
 
-    def test_default_extensions_composition(self):
+    def test_default_domain_composition(self):
         from os import path
         result = self.make()
         name, ext = path.splitext(result)
         self.assertIn(ext, (".com", ".org", ".net"))
 
-    def test_provided_extension_is_used(self):
+    def test_provided_domain_is_used(self):
         from random import choice
 
-        extensions = ['.com.br', '.cc', '.io']
-        ext = choice(extensions)
-        result = self.make(extensions=[ext])
-        self.assertTrue(result.endswith(ext))
+        domains = ['.com.br', '.cc', '.io']
+        domain = choice(domains)
+        result = self.make(domains=[domain])
+        self.assertTrue(result.endswith(domain))
 
     def test_hostname_complains_if_length_is_too_small(self):
-        self.assertRaises(AssertionError, lambda: self.make(max_length=2, extensions=['.com.br']))
+        self.assertRaises(AssertionError, lambda: self.make(max_length=2, domains=['.com.br']))
 
 
 class TestMakeEmailLocalPart(unittest.TestCase, IsStringMixin):
@@ -566,13 +566,13 @@ class TestMakeUrl(unittest.TestCase, HasHostnameLabelMixin):
         self.assertTrue(result.startswith('http:'))
 
     def test_min_max_length_is_possible(self):
-        result = self.make(max_length=10, extensions=['.c'])
+        result = self.make(max_length=10, domains=['.c'])
         self.assertEqual(len(result), 10)
 
-    def test_provided_extension_is_used(self):
+    def test_provided_domain_is_used(self):
         from random import choice
         char = choice(string.ascii_lowercase)
-        result = self.make(max_length=10, extensions=['.%s' % char])
+        result = self.make(max_length=10, domains=['.%s' % char])
         self.assertTrue(result.endswith('.%s' % char))
 
     def test_hostname_part_is_actually_a_hostname(self):
