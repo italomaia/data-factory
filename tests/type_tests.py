@@ -549,8 +549,11 @@ class TestMakeEmail(unittest.TestCase, IsStringMixin):
             self.assertTrue(self.is_hostname_label(label))
 
 
-class TestMakeUrl(unittest.TestCase):
-    pass
+class TestMakeUrl(unittest.TestCase, IsStringMixin):
+    def make(self, **kwargs):
+        from data_factory import make_url
+        kwargs['max_length'] = kwargs.get('max_length', 12)
+        return make_url(**kwargs)
 
 
 class TestMakeIP(unittest.TestCase):
@@ -618,5 +621,25 @@ class TestMakeMimeType(unittest.TestCase, IsStringMixin):
         self.assertIn(result, mimetypes.types_map.values())
 
 
-class TestMakeFilename(unittest.TestCase):
-    pass
+class TestMakeFilename(unittest.TestCase, IsStringMixin):
+    def make(self, **kwargs):
+        from data_factory import make_filename
+        kwargs['max_length'] = kwargs.get('max_length', 12)
+        return make_filename(**kwargs)
+
+    def test_charset(self):
+        charset = string.printable
+        result = self.make()
+
+        for c in result:
+            self.assertIn(c, charset)
+
+    def test_uses_default_extensions(self):
+        from os.path import splitext
+        result = self.make()
+        name, ext = splitext(result)
+        self.assertIn(ext, (".txt", ".odt", ".pdf"))
+
+    def test_uses_provided_extensions(self):
+        result = self.make(extensions=['.odt'])
+        self.assertTrue(result.endswith('.odt'))
