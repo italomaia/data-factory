@@ -465,9 +465,42 @@ class TestMakeHostname(unittest.TestCase, IsStringMixin):
         self.assertRaises(AssertionError, lambda: self.make(max_length=2, extensions=['.com.br']))
 
 
+class TestMakeEmailLocalPart(unittest.TestCase, IsStringMixin):
+    def make(self, length=None):
+        from random import randint
+        from data_factory import make_email_local_part
 
-class TestMakeEmailLocalPart(unittest.TestCase):
-    pass
+        length = randint(1, 64) if length is None else length
+        return make_email_local_part(length)
+
+    def test_makes_local_part_with_requested_length(self):
+        from random import randint
+        length = randint(1, 64)
+        result = self.make(length)
+        self.assertEqual(len(result), length)
+
+    def test_local_part_length_restriction(self):
+        # between 1 and 63 characters
+        self.assertRaises(AssertionError, lambda: self.make(0))
+        self.assertRaises(AssertionError, lambda: self.make(65))
+
+    def test_label_has_proper_charset(self):
+        result = self.make()
+        charset = string.ascii_letters + string.digits + "!#$%&'*+-/=?^_`{|}~."
+
+        for c in result:
+            self.assertIn(c, charset)
+
+    def test_no_consecutive_dots(self):
+        result = self.make()
+        flag = False
+
+        for c in result:
+            if c != '.':
+                flag = False
+            else:
+                self.assertFalse(flag)
+                flag = True
 
 
 class TestMakeEmail(unittest.TestCase):

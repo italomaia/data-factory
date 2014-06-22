@@ -379,14 +379,10 @@ def make_email_local_part(length):
     """
     Creates an email local part.
 
-    Example:
-
-    >>> email_local_part = make_email_local_part(20)
-    >>> assert isinstance(email_local_part, basestring)
-    >>> assert len(email_local_part) == 20
-
     @see http://en.wikipedia.org/wiki/Email_address#Syntax
     """
+    assert length > 0
+    assert length < 65
 
     char_table = string.ascii_letters + string.digits + "!#$%&'*+-/=?^_`{|}~"
     char_table_with_dot = char_table + "."
