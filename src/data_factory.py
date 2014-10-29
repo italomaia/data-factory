@@ -11,10 +11,10 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 
 
-# fix for python3 >= version
-if sys.version_info >= (3, 0):
-    unichr = chr
-    basestring = unicode = str
+g = globals()
+unichr = g['__builtins__'].get('unichr', chr)
+unicode = g['__builtins__'].get('unicode', str)
+basestring = g['__builtins__'].get('basestring', str)
 
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
@@ -31,7 +31,7 @@ SLUG_TABLE = string.ascii_letters + string.digits + '-_'
 BINARY_TABLE = '01'
 
 
-error_msgs = {}
+error_msgs = dict()
 error_msgs["max_length"] = "Informed max_length %d is too small."
 error_msgs["max_length_ext"] = "max_length is too small for given extensions"
 
@@ -216,6 +216,9 @@ def make_binary(length):
     @param length:
     @return: string in the format '01000101...'
     """
+    if length < 1:
+        raise ValueError('length too short for binary')
+
     return make_char_sequence(BINARY_TABLE, length)
 
 
@@ -453,18 +456,18 @@ def make_ip_address_str(*args, **kw):
         return ':'.join(map(lambda v: v[2:], ip_address))
 
 
-def make_ip_address(valid=True, v=4):
+def make_ip_address(include_private=True, v=4):
     """
     Returns a IP address
 
-    Invalid addresses for IPV4:
+    Private ip addresses for IPV4:
      - [0] 10.x.x.x
      - [1] 192.168.x.x
      - [2] 172.16.0.0 to 172.31.255.255
 
     Keyword Arguments:
-        valid   -- forces ip address to be valid
-        v       -- ip address version 4|6
+        include_private -- include private ip addresses in result?
+        v               -- ip address version 4|6
 
     """
 
@@ -472,7 +475,7 @@ def make_ip_address(valid=True, v=4):
         while True:
             ad = [random.randint(0, 255) for i in range(4)]
 
-            if valid:
+            if not include_private:
                 if ad[0] == 10:
                     continue
                 if (ad[0], ad[1]) == (192, 168):

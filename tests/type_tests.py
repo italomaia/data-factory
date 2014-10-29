@@ -94,6 +94,20 @@ class UnsignedIntegerMixin(IntegerIsInBoundsMixin):
         return super(UnsignedIntegerMixin, self).get_upper_bound() * 2 + 1
 
 
+class TestPy2Py3Hacks(unittest.TestCase):
+    def test_unichr_exists(self):
+        import data_factory
+        assert hasattr(data_factory, 'unichr'), 'unichr not available'
+
+    def test_basestring_exists(self):
+        import data_factory as df
+        assert hasattr(df, 'basestring'), 'basestring not available'
+
+    def test_unicode_exists(self):
+        import data_factory as df
+        assert hasattr(df, 'unicode'), 'unicode not available'
+
+
 class TestOrNull(unittest.TestCase):
     def setUp(self):
         from data_factory import or_null
@@ -134,6 +148,10 @@ class TestMakeTinyInteger(unittest.TestCase, IntegerIsInBoundsMixin):
 
 
 class TestMakeSmallInteger(unittest.TestCase, IntegerIsInBoundsMixin):
+    def make(self):
+        from data_factory import make_small_integer
+        return make_small_integer()
+
     def get_lower_bound(self):
         from data_factory import MIN_SMALL_INT
         return MIN_SMALL_INT
@@ -141,10 +159,6 @@ class TestMakeSmallInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def get_upper_bound(self):
         from data_factory import MAX_SMALL_INT
         return MAX_SMALL_INT
-
-    def make(self):
-        from data_factory import make_small_integer
-        return make_small_integer()
 
 
 class TestMakeInteger(unittest.TestCase, IntegerIsInBoundsMixin):
@@ -197,6 +211,29 @@ class TestMakeUnsignedBigInteger(UnsignedIntegerMixin, TestMakeBigInteger):
     def make(self):
         from data_factory import make_unsigned_big_integer
         return make_unsigned_big_integer()
+
+
+class TestMakeBinary(unittest.TestCase, HasMake):
+    def make(self, length=8):
+        from data_factory import make_binary
+
+        return make_binary(length=length)
+
+    def test_makes_binary(self):
+        result = self.make()
+
+        for c in result:
+            self.assertIn(c, '01')
+
+    def test_obeys_length(self):
+        from random import randint
+        length = randint(1, 32)
+        result = self.make(length)
+
+        self.assertEqual(len(result), length)
+
+    def test_binary_does_not_accepts_length_zero(self):
+        self.assertRaises(ValueError, self.make, 0)
 
 
 class TestMakeMimeType(unittest.TestCase, HasMake):
@@ -585,19 +622,19 @@ class TestMakeUrl(unittest.TestCase, HasHostnameLabelMixin):
 
 
 class TestMakeIP(unittest.TestCase):
-    def make(self, v=4):
+    def make(self, include_private=True, v=4):
         from data_factory import make_ip_address
-        return make_ip_address(v=v)
+        return make_ip_address(include_private=include_private, v=v)
 
-    def test_makes_v4_ip(self):
+    def test_makes_ipv4(self):
         result = self.make()
         self.assertEqual(len(result), 4)
 
         for bit in result:
             self.assertTrue(0 <= bit <= 255)
 
-    def test_makes_valid_v4(self):
-        result = self.make()
+    def test_makes_non_private_ipv4(self):
+        result = self.make(include_private=False)
 
         # [0] 10.x.x.x
         self.assertNotEqual(result[0], 10)
@@ -608,8 +645,8 @@ class TestMakeIP(unittest.TestCase):
         # [2] 172.16.0.0 to 172.31.255.255
         self.assertTrue(result < [172, 16, 0, 0] or result > [172, 31, 255, 255])
 
-    def test_makes_v6_ip(self):
-        result = self.make(6)
+    def test_makes_ipv6(self):
+        result = self.make(v=6)
 
         for bit in result:
             try:
