@@ -11,10 +11,13 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 
 
-g = globals()
-unichr = g['__builtins__'].get('unichr', chr)
-unicode = g['__builtins__'].get('unicode', str)
-basestring = g['__builtins__'].get('basestring', str)
+try:
+    g = globals()
+    unichr = g['__builtins__'].get('unichr', chr)
+    unicode = g['__builtins__'].get('unicode', str)
+    basestring = g['__builtins__'].get('basestring', str)
+except AttributeError:  # for pypy
+    pass
 
 
 MIN_TINY_INT, MAX_TINY_INT = -128, 127  # 8bits integer
