@@ -31,7 +31,7 @@ REAL_DIGITS = 23
 DOUBLE_DIGITS = 53
 
 # complete character ascii table
-ASCII_TABLE = ''.join([chr(i) for i in range(255)])
+ASCII_TABLE = ''.join([chr(j) for j in range(255)])
 SLUG_TABLE = string.ascii_letters + string.digits + '-_'
 BINARY_TABLE = '01'
 
@@ -229,16 +229,13 @@ def make_binary(length):
 
 def make_ascii_string(max_length, empty=False):
     """
-    Example:
+    Keyword arguments:
+        max_length  -- max length for string
+        empty       -- allow empty string?
 
-    >>> sample_string = make_ascii_string(10)
-    >>> assert isinstance(sample_string, basestring)
-
-    @param max_length:
-    @param empty:
-    @return:
     """
-    return make_char_sequence(ASCII_TABLE,
+    return make_char_sequence(
+        ASCII_TABLE,
         random.randint(int(not empty), max_length))
 
 
@@ -247,19 +244,13 @@ def make_string(max_length, empty=False):
     Creates a random length non-empty string. If `empty` is set to True,
     an empty string can be generated.
 
-    Example:
+    Keyword arguments:
+        max_length  -- max length for string
+        empty       -- allow empty string?
 
-    >>> string_sample = make_string(10)
-    >>> assert isinstance(string_sample, basestring)
-    >>>
-    >>> string_sample = make_string(10, True)
-    >>> assert isinstance(string_sample, basestring)
-
-    @param max_length:
-    @param empty:
-    @return:
     """
-    return make_char_sequence(string.printable,
+    return make_char_sequence(
+        string.printable,
         random.randint(int(not empty), max_length))
 
 
@@ -268,14 +259,18 @@ def make_unicode(max_length, empty=False):
     Gets you a unicode string. Character range depends in the UCS your python
     was configured with (UCS2/UCS4).
 
-    @see: http://pyref.infogami.com/unichr
-    @param max_length:
-    @param empty:
+    See http://pyref.infogami.com/unichr
+
+    Keyword arguments:
+        max_length  --
+        empty       --
     @return: randomly generated unicode string
     """
     return ''.join(
-        [unichr(random.randint(0, sys.maxunicode))
-        for i in range(random.randint(int(not empty), max_length))])
+        [
+            unichr(random.randint(0, sys.maxunicode))
+            for i in range(random.randint(int(not empty), max_length))
+        ])
 
 
 def make_slug(max_length, empty=False):
@@ -358,7 +353,7 @@ def make_hostname_label(length):
     return local_str
 
 
-def make_hostname(max_length, domains=[".com", ".org", ".net"]):
+def make_hostname(max_length, domains=(".com", ".org", ".net")):
     """
     Creates an hostname with length up to max_length using one of the
     informed extensions.
@@ -422,7 +417,7 @@ def make_email(local_length, domain_length):
     return local_part + '@' + domain_part
 
 
-def make_url(max_length, safe=False, port_number=None, domains=['.com']):
+def make_url(max_length, safe=False, port_number=None, domains=('.com',)):
     """
     Positional Arguments:
         max_length  -- max length of new url
@@ -502,7 +497,7 @@ def make_mime_type():
     return random.choice(types_tuple)
 
 
-def make_filename(max_length, extensions=[".txt", ".odt", ".pdf"]):
+def make_filename(max_length, extensions=(".txt", ".odt", ".pdf")):
     """
     Returns a valid filename with one of the given extensions
 

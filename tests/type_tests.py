@@ -350,6 +350,19 @@ class TestMakeCharSequence(unittest.TestCase, IsStringMixin):
             self.assertTrue(c in self.table)
 
 
+class TestMakePrintableString(unittest.TestCase, IsStringMixin):
+    def make(self, max_length=12):
+        from data_factory import make_string
+        return make_string(max_length=max_length)
+
+    def test_is_printable(self):
+        from string import printable
+
+        result = self.make()
+        for c in result:
+            self.assertIn(c, printable)
+
+
 class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
     def make(self, max_length=12, empty=False):
         from data_factory import make_ascii_string
