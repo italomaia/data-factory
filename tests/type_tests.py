@@ -96,8 +96,8 @@ class UnsignedIntegerMixin(IntegerIsInBoundsMixin):
 
 class TestPy2Py3Hacks(unittest.TestCase):
     def test_unichr_exists(self):
-        import data_factory
-        assert hasattr(data_factory, 'unichr'), 'unichr not available'
+        import data_factory as df
+        assert hasattr(df, 'unichr'), 'unichr not available'
 
     def test_basestring_exists(self):
         import data_factory as df
