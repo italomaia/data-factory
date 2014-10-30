@@ -7,7 +7,7 @@ python:
 install:
   - pip install coveralls
 
-script: nosetests --with-coverage
+script: nosetests --with-coverage --cover-package=data_factory
 
 after_success:
     coveralls
