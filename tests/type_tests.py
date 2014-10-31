@@ -4,6 +4,7 @@ import sys
 import string
 import unittest
 
+
 integer_types = (int,)
 
 if sys.version_info < (3, 0):
@@ -96,21 +97,21 @@ class UnsignedIntegerMixin(IntegerIsInBoundsMixin):
 
 class TestPy2Py3Hacks(unittest.TestCase):
     def test_unichr_exists(self):
-        import data_factory as df
-        assert hasattr(df, 'unichr'), 'unichr not available'
+        from data_factory import factory
+        assert hasattr(factory, 'unichr'), 'unichr not available'
 
     def test_basestring_exists(self):
-        import data_factory as df
-        assert hasattr(df, 'basestring'), 'basestring not available'
+        from data_factory import factory
+        assert hasattr(factory, 'basestring'), 'basestring not available'
 
     def test_unicode_exists(self):
-        import data_factory as df
-        assert hasattr(df, 'unicode'), 'unicode not available'
+        from data_factory import factory
+        assert hasattr(factory, 'unicode'), 'unicode not available'
 
 
 class TestOrNull(unittest.TestCase):
     def setUp(self):
-        from data_factory import or_null
+        from data_factory.factory import or_null
 
         self.or_null = or_null
         self.fnc = lambda: 10
@@ -135,87 +136,87 @@ class TestOrNull(unittest.TestCase):
 
 class TestMakeTinyInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def get_lower_bound(self):
-        from data_factory import MIN_TINY_INT
+        from data_factory.factory import MIN_TINY_INT
         return MIN_TINY_INT
 
     def get_upper_bound(self):
-        from data_factory import MAX_TINY_INT
+        from data_factory.factory import MAX_TINY_INT
         return MAX_TINY_INT
 
     def make(self):
-        from data_factory import make_tiny_integer
+        from data_factory.factory import make_tiny_integer
         return make_tiny_integer()
 
 
 class TestMakeSmallInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def make(self):
-        from data_factory import make_small_integer
+        from data_factory.factory import make_small_integer
         return make_small_integer()
 
     def get_lower_bound(self):
-        from data_factory import MIN_SMALL_INT
+        from data_factory.factory import MIN_SMALL_INT
         return MIN_SMALL_INT
 
     def get_upper_bound(self):
-        from data_factory import MAX_SMALL_INT
+        from data_factory.factory import MAX_SMALL_INT
         return MAX_SMALL_INT
 
 
 class TestMakeInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def make(self):
-        from data_factory import make_integer
+        from data_factory.factory import make_integer
         return make_integer()
 
     def get_lower_bound(self):
-        from data_factory import MIN_INT
+        from data_factory.factory import MIN_INT
         return MIN_INT
 
     def get_upper_bound(self):
-        from data_factory import MAX_INT
+        from data_factory.factory import MAX_INT
         return MAX_INT
 
 
 class TestMakeBigInteger(unittest.TestCase, IntegerIsInBoundsMixin):
     def make(self):
-        from data_factory import make_big_integer
+        from data_factory.factory import make_big_integer
         return make_big_integer()
 
     def get_lower_bound(self):
-        from data_factory import MIN_BIG_INT
+        from data_factory.factory import MIN_BIG_INT
         return MIN_BIG_INT
 
     def get_upper_bound(self):
-        from data_factory import MAX_BIG_INT
+        from data_factory.factory import MAX_BIG_INT
         return MAX_BIG_INT
 
 
 class TestMakeUnsignedTinyInteger(UnsignedIntegerMixin, TestMakeTinyInteger):
     def make(self):
-        from data_factory import make_unsigned_tiny_integer
+        from data_factory.factory import make_unsigned_tiny_integer
         return make_unsigned_tiny_integer()
 
 
 class TestMakeUnsignedSmallInteger(UnsignedIntegerMixin, TestMakeSmallInteger):
     def make(self):
-        from data_factory import make_unsigned_small_integer
+        from data_factory.factory import make_unsigned_small_integer
         return make_unsigned_small_integer()
 
 
 class TestMakeUnsignedInteger(UnsignedIntegerMixin, TestMakeInteger):
     def make(self):
-        from data_factory import make_unsigned_integer
+        from data_factory.factory import make_unsigned_integer
         return make_unsigned_integer()
 
 
 class TestMakeUnsignedBigInteger(UnsignedIntegerMixin, TestMakeBigInteger):
     def make(self):
-        from data_factory import make_unsigned_big_integer
+        from data_factory.factory import make_unsigned_big_integer
         return make_unsigned_big_integer()
 
 
 class TestMakeBinary(unittest.TestCase, HasMake):
     def make(self, length=8):
-        from data_factory import make_binary
+        from data_factory.factory import make_binary
 
         return make_binary(length=length)
 
@@ -238,7 +239,7 @@ class TestMakeBinary(unittest.TestCase, HasMake):
 
 class TestMakeMimeType(unittest.TestCase, HasMake):
     def make(self):
-        from data_factory import make_mime_type
+        from data_factory.factory import make_mime_type
         return make_mime_type()
 
     def test_returns_string(self):
@@ -247,11 +248,11 @@ class TestMakeMimeType(unittest.TestCase, HasMake):
 
 class TestMakeReal(unittest.TestCase, IsFloatMixin):
     def make(self):
-        from data_factory import make_real
+        from data_factory.factory import make_real
         return make_real()
 
     def test_makes_real(self):
-        from data_factory import REAL_DIGITS
+        from data_factory.factory import REAL_DIGITS
         result = self.make()
         result_len = len(str(result)) - 1  # dot not considered as a position
         self.assertLessEqual(result_len, REAL_DIGITS)
@@ -259,11 +260,11 @@ class TestMakeReal(unittest.TestCase, IsFloatMixin):
 
 class TestMakeDouble(unittest.TestCase, IsFloatMixin):
     def make(self):
-        from data_factory import make_double
+        from data_factory.factory import make_double
         return make_double()
 
     def test_makes_real(self):
-        from data_factory import DOUBLE_DIGITS
+        from data_factory.factory import DOUBLE_DIGITS
         result = self.make()
         result_len = len(str(result)) - 1  # dot not considered as a position
         self.assertLessEqual(result_len, DOUBLE_DIGITS)
@@ -271,7 +272,7 @@ class TestMakeDouble(unittest.TestCase, IsFloatMixin):
 
 class TestMakeDecimal(unittest.TestCase, HasMake):
     def make(self, max_digits=None, decimal=None, precision=None):
-        from data_factory import make_decimal
+        from data_factory.factory import make_decimal
         return make_decimal(max_digits, decimal, precision)
 
     def test_makes_decimal(self):
@@ -315,7 +316,7 @@ class TestMakeDecimal(unittest.TestCase, HasMake):
 
 class TestMakeBoolean(unittest.TestCase, HasMake):
     def make(self):
-        from data_factory import make_boolean
+        from data_factory.factory import make_boolean
 
         return make_boolean()
 
@@ -339,7 +340,7 @@ class TestMakeBoolean(unittest.TestCase, HasMake):
 
 class TestMakeCharSequence(unittest.TestCase, IsStringMixin):
     def make(self, table='abc123', length=12):
-        from data_factory import make_char_sequence
+        from data_factory.factory import make_char_sequence
         self.table = table
         return make_char_sequence(table, length)
 
@@ -352,7 +353,7 @@ class TestMakeCharSequence(unittest.TestCase, IsStringMixin):
 
 class TestMakePrintableString(unittest.TestCase, IsStringMixin):
     def make(self, max_length=12):
-        from data_factory import make_string
+        from data_factory.factory import make_string
         return make_string(max_length=max_length)
 
     def test_is_printable(self):
@@ -365,11 +366,11 @@ class TestMakePrintableString(unittest.TestCase, IsStringMixin):
 
 class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
     def make(self, max_length=12, empty=False):
-        from data_factory import make_ascii_string
+        from data_factory.factory import make_ascii_string
         return make_ascii_string(max_length, empty)
 
     def test_makes_ascii_string(self):
-        from data_factory import ASCII_TABLE
+        from data_factory.factory import ASCII_TABLE
 
         result = self.make()
         for c in result:
@@ -378,7 +379,7 @@ class TestMakeASCII(unittest.TestCase, HasDefaultStringInterfaceMixin):
 
 class TestMakeUnicode(unittest.TestCase, HasDefaultStringInterfaceMixin):
     def make(self, max_length=12, empty=False):
-        from data_factory import make_unicode
+        from data_factory.factory import make_unicode
         return make_unicode(max_length, empty)
 
     def test_makes_unicode_string(self):
@@ -391,11 +392,11 @@ class TestMakeUnicode(unittest.TestCase, HasDefaultStringInterfaceMixin):
 
 class TestMakeSlug(unittest.TestCase, HasDefaultStringInterfaceMixin):
     def make(self, max_length=12, empty=False):
-        from data_factory import make_slug
+        from data_factory.factory import make_slug
         return make_slug(max_length, empty)
 
     def test_makes_slug_string(self):
-        from data_factory import SLUG_TABLE
+        from data_factory.factory import SLUG_TABLE
         result = self.make()
 
         for c in result:
@@ -404,7 +405,7 @@ class TestMakeSlug(unittest.TestCase, HasDefaultStringInterfaceMixin):
 
 class TestMakeDatetime(unittest.TestCase):
     def make(self, from_date=None, to_date=None):
-        from data_factory import make_datetime
+        from data_factory.factory import make_datetime
         return make_datetime(from_date, to_date)
 
     def test_makes_datetime(self):
@@ -454,7 +455,7 @@ class TestMakeDatetime(unittest.TestCase):
 
 class TestMakeHostnameLabel(unittest.TestCase, IsStringMixin):
     def make(self, length=12):
-        from data_factory import make_hostname_label
+        from data_factory.factory import make_hostname_label
         return make_hostname_label(length)
 
     def test_makes_label_with_requested_length(self):
@@ -478,7 +479,7 @@ class TestMakeHostnameLabel(unittest.TestCase, IsStringMixin):
 
 class TestMakeHostname(unittest.TestCase, HasHostnameLabelMixin):
     def make(self, **kwargs):
-        from data_factory import make_hostname
+        from data_factory.factory import make_hostname
 
         kwargs['max_length'] = kwargs.get('max_length', 12)
         return make_hostname(**kwargs)
@@ -520,7 +521,7 @@ class TestMakeHostname(unittest.TestCase, HasHostnameLabelMixin):
 class TestMakeEmailLocalPart(unittest.TestCase, IsStringMixin):
     def make(self, length=None):
         from random import randint
-        from data_factory import make_email_local_part
+        from data_factory.factory import make_email_local_part
 
         length = randint(1, 64) if length is None else length
         return make_email_local_part(length)
@@ -578,7 +579,7 @@ class TestMakeEmail(unittest.TestCase, IsStringMixin):
         return True
 
     def make(self, local_length=6, domain_length=8):
-        from data_factory import make_email
+        from data_factory.factory import make_email
         return make_email(local_length, domain_length)
 
     def test_if_looks_like_an_email(self):
@@ -603,7 +604,7 @@ class TestMakeEmail(unittest.TestCase, IsStringMixin):
 
 class TestMakeUrl(unittest.TestCase, HasHostnameLabelMixin):
     def make(self, **kwargs):
-        from data_factory import make_url
+        from data_factory.factory import make_url
         kwargs['max_length'] = kwargs.get('max_length', 20)
         return make_url(**kwargs)
 
@@ -636,7 +637,7 @@ class TestMakeUrl(unittest.TestCase, HasHostnameLabelMixin):
 
 class TestMakeIP(unittest.TestCase):
     def make(self, include_private=True, v=4):
-        from data_factory import make_ip_address
+        from data_factory.factory import make_ip_address
         return make_ip_address(include_private=include_private, v=v)
 
     def test_makes_ipv4(self):
@@ -672,7 +673,7 @@ class TestMakeIP(unittest.TestCase):
 
 class TestMakeIPStr(unittest.TestCase):
     def make(self, v=4):
-        from data_factory import make_ip_address_str
+        from data_factory.factory import make_ip_address_str
         return make_ip_address_str(v=v)
 
     def test_makes_valid_ipv4_formatted_string(self):
@@ -690,7 +691,7 @@ class TestMakeIPStr(unittest.TestCase):
 
 class TestMakeMimeType(unittest.TestCase, IsStringMixin):
     def make(self):
-        from data_factory import make_mime_type
+        from data_factory.factory import make_mime_type
         return make_mime_type()
 
     def test_if_is_valid_mimetype(self):
@@ -701,7 +702,7 @@ class TestMakeMimeType(unittest.TestCase, IsStringMixin):
 
 class TestMakeFilename(unittest.TestCase, IsStringMixin):
     def make(self, **kwargs):
-        from data_factory import make_filename
+        from data_factory.factory import make_filename
         kwargs['max_length'] = kwargs.get('max_length', 12)
         return make_filename(**kwargs)
 
